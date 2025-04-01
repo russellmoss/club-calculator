@@ -1,37 +1,46 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
+import axios from 'axios';
+
+const API_BASE_URL = 'http://localhost:5000';
 
 const useCommerce7Api = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const apiCall = useCallback(async (endpoint, options = {}) => {
-    setLoading(true);
-    setError(null);
-
+  
+  /**
+   * Process club signup by creating/updating customer and creating membership
+   */
+  const processClubSignup = async (formData) => {
     try {
-      const response = await fetch(endpoint, {
-        ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
+      setLoading(true);
+      
+      // Call our backend endpoint that handles Commerce7 API calls
+      const response = await axios.post(`${API_BASE_URL}/api/club-signup`, {
+        customerInfo: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          birthDate: formData.birthDate
         },
+        billingAddress: formData.billingAddress,
+        shippingAddress: formData.shippingAddress,
+        clubId: formData.clubId,
+        orderDeliveryMethod: formData.orderDeliveryMethod
       });
-
-      if (!response.ok) {
-        throw new Error(`API call failed: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (err) {
-      setError(err.message);
-      throw err;
+      
+      return response.data;
+    } catch (error) {
+      console.error('Club signup error:', error);
+      throw new Error(error.response?.data?.message || 'Failed to process club signup');
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  return { apiCall, loading, error };
+  return {
+    loading,
+    processClubSignup
+  };
 };
 
 export default useCommerce7Api; 
