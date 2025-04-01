@@ -1,109 +1,145 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCalculator } from '../../contexts/CalculatorContext';
-import { calculateSavings } from '../../utils/calculatorUtils';
+import Button from '../common/Button';
+import Modal from '../common/Modal';
+import ClubSignupForm from '../clubSignup/ClubSignupForm';
 
 const ResultsPage = () => {
-  const { 
-    monthlyBottles, 
-    averageBottlePrice, 
-    annualEvents, 
-    annualTastings,
-    culinarySeries,
-    setCurrentStep 
-  } = useCalculator();
-
-  const savings = calculateSavings({
-    monthlyBottles,
-    averageBottlePrice,
-    annualEvents,
-    annualTastings,
-    culinarySeries
-  });
-
-  const tiers = [
-    {
-      name: 'Jumper',
-      description: 'Perfect for wine enthusiasts who want to start their journey',
-      benefits: [
-        '10% off all wine purchases',
-        'Two complimentary tastings per month',
-        'Access to member-only events',
-        'Priority access to limited releases'
-      ],
-      savings: savings.jumper
-    },
-    {
-      name: 'Grand Prix',
-      description: 'Enhanced benefits for the dedicated wine collector',
-      benefits: [
-        '15% off all wine purchases',
-        'Four complimentary tastings per month',
-        'Access to member-only events',
-        'Priority access to limited releases',
-        'Exclusive access to Grand Prix events'
-      ],
-      savings: savings.grandPrix
-    },
-    {
-      name: 'Triple Crown',
-      description: 'The ultimate wine club experience',
-      benefits: [
-        '20% off all wine purchases',
-        'Unlimited complimentary tastings',
-        'Access to member-only events',
-        'Priority access to limited releases',
-        'Exclusive access to Triple Crown events',
-        'Food discounts at events',
-        'Special recognition at events'
-      ],
-      savings: savings.tripleCrown
-    }
-  ];
+  const { savings, resetCalculator } = useCalculator();
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const [selectedClub, setSelectedClub] = useState(null);
+  
+  const handleJoinClub = (clubId) => {
+    setSelectedClub(clubId);
+    setShowSignupModal(true);
+  };
 
   return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <h2 className="text-2xl font-gilda text-primary mb-4">
-          Your Wine Club Recommendations
-        </h2>
-        <p className="text-gray-700">
-          Based on your preferences, here are the best options for you.
-        </p>
-      </div>
-
-      <div className="space-y-6">
-        {tiers.map((tier) => (
-          <div 
-            key={tier.name}
-            className="bg-white rounded-lg shadow-md p-6 border border-gray-200"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="text-xl font-gilda text-primary">{tier.name} Tier</h3>
-                <p className="text-sm text-gray-600 mt-1">{tier.description}</p>
-              </div>
-              <span className="text-2xl font-bold text-green-600">
-                ${tier.savings.toFixed(2)}
-              </span>
-            </div>
-            
-            <div className="space-y-2 text-sm text-gray-600">
-              {tier.benefits.map((benefit, index) => (
-                <p key={index}>• {benefit}</p>
-              ))}
-            </div>
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-gilda text-primary mb-6 text-center">Your Potential Annual Savings</h2>
+      
+      {/* Triple Crown */}
+      <div className="mb-6 p-6 rounded-lg border-2 border-primary bg-background">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-gilda text-primary">Triple Crown</h3>
+          <div className="text-right">
+            <div className="text-sm text-gray-600">Annual Savings</div>
+            <div className="text-2xl font-bold text-primary">${Math.round(savings.tripleCrown)}</div>
           </div>
-        ))}
-      </div>
-
-      <div className="mt-8">
+        </div>
+        
+        <div className="mb-4">
+          <h4 className="font-medium mb-2">Club Benefits:</h4>
+          <ul className="list-disc pl-5 space-y-1">
+            <li className="text-sm">12 bottles per shipment (4x/year)</li>
+            <li className="text-sm">15% off all Milea wines</li>
+            <li className="text-sm">15% off Milea accommodations</li>
+            <li className="text-sm">15% off Milea Local & Seasonal plates</li>
+            <li className="text-sm">Reciprocal membership with Hudson Valley Vineyards</li>
+            <li className="text-sm">Fully customizable shipments</li>
+            <li className="text-sm">Access to exclusive club-only events</li>
+            <li className="text-sm">Free quarterly tastings for member + 3 guests</li>
+          </ul>
+        </div>
+        
         <button
-          onClick={() => setCurrentStep(0)}
-          className="w-full bg-primary text-white px-6 py-3 rounded-md hover:bg-darkBrownHover transition-colors"
+          onClick={() => handleJoinClub(process.env.REACT_APP_CLUB_TRIPLE_CROWN_ID)}
+          className="w-full bg-primary text-white py-4 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-colors"
+        >
+          Join Triple Crown
+        </button>
+      </div>
+      
+      {/* Grand Prix */}
+      <div className="mb-6 p-6 rounded-lg border border-gray-200">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-gilda text-darkBrown">Grand Prix</h3>
+          <div className="text-right">
+            <div className="text-sm text-gray-600">Annual Savings</div>
+            <div className="text-2xl font-bold text-primary">${Math.round(savings.grandPrix)}</div>
+          </div>
+        </div>
+        
+        <div className="mb-4">
+          <h4 className="font-medium mb-2">Club Benefits:</h4>
+          <ul className="list-disc pl-5 space-y-1">
+            <li className="text-sm">6 bottles per shipment (4x/year)</li>
+            <li className="text-sm">15% off all Milea wines</li>
+            <li className="text-sm">Fully customizable shipments</li>
+            <li className="text-sm">Access to exclusive club-only events</li>
+            <li className="text-sm">Free quarterly tastings for member + 3 guests</li>
+          </ul>
+        </div>
+        
+        <button
+          onClick={() => handleJoinClub(process.env.REACT_APP_CLUB_GRAND_PRIX_ID)}
+          className="w-full bg-primary text-white py-4 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-colors"
+        >
+          Join Grand Prix
+        </button>
+      </div>
+      
+      {/* Jumper */}
+      <div className="mb-6 p-6 rounded-lg border border-gray-200">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-gilda text-darkBrown">Jumper</h3>
+          <div className="text-right">
+            <div className="text-sm text-gray-600">Annual Savings</div>
+            <div className="text-2xl font-bold text-primary">${Math.round(savings.jumper)}</div>
+          </div>
+        </div>
+        
+        <div className="mb-4">
+          <h4 className="font-medium mb-2">Club Benefits:</h4>
+          <ul className="list-disc pl-5 space-y-1">
+            <li className="text-sm">4 bottles per shipment (4x/year)</li>
+            <li className="text-sm">10% off all Milea wines</li>
+            <li className="text-sm">Curated selection</li>
+            <li className="text-sm">Access to exclusive club-only events</li>
+          </ul>
+        </div>
+        
+        <button
+          onClick={() => handleJoinClub(process.env.REACT_APP_CLUB_JUMPER_ID)}
+          className="w-full bg-primary text-white py-4 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-colors"
+        >
+          Join Jumper
+        </button>
+      </div>
+      
+      <div className="mt-8 text-center">
+        <a 
+          href="https://mileaestatevineyard.com/wine-club/" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-primary hover:underline font-medium"
+        >
+          Learn more about the clubs
+        </a>
+      </div>
+      
+      <div className="mt-6 text-center">
+        <button
+          onClick={resetCalculator}
+          className="bg-gray-200 text-gray-800 py-3 px-6 rounded-md text-lg font-medium hover:bg-gray-300 transition-colors"
         >
           Start Over
         </button>
       </div>
+      
+      {/* Modal for club signup */}
+      {showSignupModal && (
+        <Modal 
+          isOpen={showSignupModal}
+          onClose={() => setShowSignupModal(false)}
+          title="Join Milea Wine Club"
+        >
+          <ClubSignupForm 
+            clubId={selectedClub} 
+            onClose={() => setShowSignupModal(false)} 
+          />
+        </Modal>
+      )}
     </div>
   );
 };
