@@ -132,14 +132,17 @@ async function addCustomerAddress(customerId, addressData, addressType) {
   }
 }
 
-async function createClubMembership(customerId, clubId, billToAddressId, shipToAddressId, orderDeliveryMethod) {
+async function createClubMembership(customerId, clubId, billToAddressId, shipToAddressId, orderDeliveryMethod, metadata) {
   try {
     const payload = {
       customerId,
       clubId,
       billToCustomerAddressId: billToAddressId,
       signupDate: new Date().toISOString(),
-      orderDeliveryMethod
+      orderDeliveryMethod,
+      metaData: {
+        'club-calculator-sign-up': 'true'
+      }
     };
     
     if (orderDeliveryMethod === 'Pickup') {
@@ -148,13 +151,27 @@ async function createClubMembership(customerId, clubId, billToAddressId, shipToA
       payload.shipToCustomerAddressId = shipToAddressId;
     }
     
+    console.log('Creating club membership with payload:', JSON.stringify(payload, null, 2));
+    
     const response = await axios.post(
       'https://api.commerce7.com/v1/club-membership',
       payload,
       authConfig
     );
     
-    return response.data;
+    // Verify metadata was properly set in the response
+    const responseData = response.data;
+    if (!responseData.metaData || responseData.metaData['club-calculator-sign-up'] !== 'true') {
+      console.warn('Metadata verification failed:', {
+        membershipId: responseData.id,
+        expectedMetaData: { 'club-calculator-sign-up': 'true' },
+        receivedMetaData: responseData.metaData
+      });
+    } else {
+      console.log('Metadata verified successfully for membership:', responseData.id);
+    }
+    
+    return responseData;
   } catch (error) {
     console.error('Error creating club membership:', error.response?.data || error.message);
     throw error;
@@ -166,7 +183,7 @@ app.post('/api/club-signup', async (req, res) => {
   try {
     console.log('Starting Wine Club Signup Process...');
     
-    const { customerInfo, billingAddress, shippingAddress, clubId, orderDeliveryMethod } = req.body;
+    const { customerInfo, billingAddress, shippingAddress, clubId, orderDeliveryMethod, metadata } = req.body;
     
     // Step 1: Check if customer exists
     let customer = await findCustomerByEmail(customerInfo.email);
@@ -201,7 +218,8 @@ app.post('/api/club-signup', async (req, res) => {
       clubId,
       billingAddressData.id,
       shippingAddressData ? shippingAddressData.id : null,
-      orderDeliveryMethod
+      orderDeliveryMethod,
+      metadata
     );
     
     console.log('Club signup process completed successfully!');

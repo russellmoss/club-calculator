@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-const API_BASE_URL = '/.netlify/functions/api';
+// Use local development server in development, Netlify Functions in production
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? '/.netlify/functions/api'
+  : 'http://localhost:5000';
 
 const useCommerce7Api = () => {
   const [loading, setLoading] = useState(false);
@@ -170,7 +173,10 @@ const useCommerce7Api = () => {
             phone: formData.phone
           }) : null,
         clubId: formData.clubId,
-        orderDeliveryMethod: formData.orderDeliveryMethod
+        orderDeliveryMethod: formData.orderDeliveryMethod,
+        metadata: {
+          'club-calculator-sign-up': 'true'
+        }
       };
       
       // Log the transformed data for debugging
