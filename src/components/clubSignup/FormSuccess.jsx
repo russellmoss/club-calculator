@@ -22,8 +22,7 @@ const FormSuccess = ({ onClose }) => {
       </h2>
       
       <p className="text-gray-600 mb-6">
-        Thank you for joining. Your membership has been successfully processed.
-        You will receive a confirmation email shortly with your membership details.
+        Thank you for joining. To finalize your membership sign up process, please see a member of the Milea Estate staff.
       </p>
       
       <div className="space-y-4">
@@ -36,8 +35,8 @@ const FormSuccess = ({ onClose }) => {
         
         <p className="text-sm text-gray-500">
           Have questions? Contact us at{' '}
-          <a href="mailto:membership@mileaestate.com" className="text-primary hover:underline">
-            membership@mileaestate.com
+          <a href="mailto:club@mileaestatevineyard.com" className="text-primary hover:underline">
+            club@mileaestatevineyard.com
           </a>
         </p>
       </div>

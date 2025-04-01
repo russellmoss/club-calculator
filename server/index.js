@@ -33,6 +33,24 @@ const authConfig = {
 };
 
 // Helper functions
+/**
+ * Transform address data to match Commerce7's expected format
+ */
+function transformAddressData(addressData, customerInfo) {
+  return {
+    firstName: customerInfo.firstName,
+    lastName: customerInfo.lastName,
+    address: addressData.address || addressData.streetAddress,
+    address2: addressData.address2 || addressData.streetAddress2 || '',
+    city: addressData.city,
+    stateCode: addressData.stateCode || addressData.state,
+    zipCode: addressData.zipCode,
+    countryCode: addressData.countryCode || 'US',
+    phone: customerInfo.phone,
+    isDefault: Boolean(addressData.isDefault)
+  };
+}
+
 async function findCustomerByEmail(email) {
   try {
     const response = await axios.get(
@@ -95,12 +113,18 @@ async function updateCustomer(customerId, customerData) {
 
 async function addCustomerAddress(customerId, addressData, addressType) {
   try {
+    console.log(`Adding ${addressType} address for customer: ${customerId}`);
+    
+    // Remove the type field as it's not supported by Commerce7's API
+    const { type, ...addressPayload } = addressData;
+    
     const response = await axios.post(
       `https://api.commerce7.com/v1/customer/${customerId}/address`,
-      addressData,
+      addressPayload,
       authConfig
     );
     
+    console.log(`${addressType} address added successfully!`, `ID: ${response.data.id}`);
     return response.data;
   } catch (error) {
     console.error(`Error adding ${addressType} address:`, error.response?.data || error.message);
@@ -140,50 +164,10 @@ async function createClubMembership(customerId, clubId, billToAddressId, shipToA
 // Routes
 app.post('/api/club-signup', async (req, res) => {
   try {
-    const {
-      customerInfo,
-      billingAddress,
-      shippingAddress,
-      clubId,
-      orderDeliveryMethod
-    } = req.body;
-
-    // Validate required fields
-    if (!customerInfo || !customerInfo.email || !customerInfo.firstName || !customerInfo.lastName) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required customer information'
-      });
-    }
-
-    if (!billingAddress || !billingAddress.streetAddress || !billingAddress.city || !billingAddress.state || !billingAddress.zipCode) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required billing address information'
-      });
-    }
-
-    if (orderDeliveryMethod === 'Ship' && (!shippingAddress || !shippingAddress.streetAddress || !shippingAddress.city || !shippingAddress.state || !shippingAddress.zipCode)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required shipping address information'
-      });
-    }
-
-    if (!clubId) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing club ID'
-      });
-    }
-
-    if (!orderDeliveryMethod || !['Ship', 'Pickup'].includes(orderDeliveryMethod)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid order delivery method'
-      });
-    }
-
+    console.log('Starting Wine Club Signup Process...');
+    
+    const { customerInfo, billingAddress, shippingAddress, clubId, orderDeliveryMethod } = req.body;
+    
     // Step 1: Check if customer exists
     let customer = await findCustomerByEmail(customerInfo.email);
     
@@ -195,18 +179,18 @@ app.post('/api/club-signup', async (req, res) => {
     }
     
     // Step 3: Add billing address
-    const billingAddressResult = await addCustomerAddress(
+    const billingAddressData = await addCustomerAddress(
       customer.id, 
-      billingAddress, 
+      transformAddressData(billingAddress, customerInfo),
       'billing'
     );
     
     // Step 4: Add shipping address (only if delivery method is "Ship")
-    let shippingAddressResult = null;
+    let shippingAddressData = null;
     if (orderDeliveryMethod === 'Ship') {
-      shippingAddressResult = await addCustomerAddress(
+      shippingAddressData = await addCustomerAddress(
         customer.id,
-        shippingAddress,
+        transformAddressData(shippingAddress, customerInfo),
         'shipping'
       );
     }
@@ -215,22 +199,31 @@ app.post('/api/club-signup', async (req, res) => {
     const clubMembership = await createClubMembership(
       customer.id,
       clubId,
-      billingAddressResult.id,
-      shippingAddressResult ? shippingAddressResult.id : null,
+      billingAddressData.id,
+      shippingAddressData ? shippingAddressData.id : null,
       orderDeliveryMethod
     );
     
-    res.json({
+    console.log('Club signup process completed successfully!');
+    console.log('Summary:');
+    console.log(`Customer: ${customer.firstName} ${customer.lastName} (${customer.id})`);
+    console.log(`Club Membership: ${clubMembership.id}`);
+    console.log(`Club Tier: ${clubId}`);
+    console.log(`Delivery Method: ${orderDeliveryMethod}`);
+    
+    res.status(200).json({
       success: true,
-      customer,
-      clubMembership
+      message: 'Club membership created successfully',
+      customerId: customer.id,
+      membershipId: clubMembership.id
     });
     
   } catch (error) {
     console.error('Error in club signup process:', error);
+    
     res.status(500).json({
       success: false,
-      error: error.response?.data?.message || error.message
+      message: error.response?.data?.message || error.message || 'An error occurred during the signup process.'
     });
   }
 });

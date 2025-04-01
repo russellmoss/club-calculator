@@ -11,19 +11,16 @@ const BillingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
     updateFormData({
       billingAddress: {
         ...formData.billingAddress,
-        [name]: value,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone
+        [name]: value
       }
     });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="md:col-span-2">
-          <label htmlFor="billingAddress" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="billingAddress" className="block text-base font-medium text-gray-900 mb-2">
             Street Address
           </label>
           <input
@@ -33,12 +30,13 @@ const BillingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             value={formData.billingAddress.address}
             onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+            placeholder="Enter your street address"
           />
         </div>
 
         <div className="md:col-span-2">
-          <label htmlFor="billingAddress2" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="billingAddress2" className="block text-base font-medium text-gray-900 mb-2">
             Apartment, suite, etc. (optional)
           </label>
           <input
@@ -47,12 +45,13 @@ const BillingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             name="address2"
             value={formData.billingAddress.address2}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+            placeholder="Enter apartment or suite number"
           />
         </div>
 
         <div>
-          <label htmlFor="billingCity" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="billingCity" className="block text-base font-medium text-gray-900 mb-2">
             City
           </label>
           <input
@@ -62,12 +61,13 @@ const BillingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             value={formData.billingAddress.city}
             onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+            placeholder="Enter your city"
           />
         </div>
 
         <div>
-          <label htmlFor="billingState" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="billingState" className="block text-base font-medium text-gray-900 mb-2">
             State
           </label>
           <input
@@ -77,12 +77,13 @@ const BillingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             value={formData.billingAddress.stateCode}
             onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+            placeholder="Enter your state"
           />
         </div>
 
         <div>
-          <label htmlFor="billingZip" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="billingZip" className="block text-base font-medium text-gray-900 mb-2">
             ZIP Code
           </label>
           <input
@@ -92,22 +93,23 @@ const BillingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             value={formData.billingAddress.zipCode}
             onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+            placeholder="Enter your ZIP code"
           />
         </div>
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between mt-8">
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="px-6 py-3 text-base font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
         >
           Back
         </button>
         <button
           type="submit"
-          className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="px-6 py-3 text-base font-medium text-white bg-primary border border-transparent rounded-md hover:bg-darkBrownHover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
         >
           Next: Shipping Address
         </button>

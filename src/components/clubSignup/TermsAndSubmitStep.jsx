@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import TermsAndConditions from './TermsAndConditions';
 
 const TermsAndSubmitStep = ({ formData, updateFormData, onBack, onSubmit, loading, error }) => {
+  const [showTerms, setShowTerms] = useState(false);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit();
@@ -10,25 +13,13 @@ const TermsAndSubmitStep = ({ formData, updateFormData, onBack, onSubmit, loadin
     updateFormData({ termsAccepted: e.target.checked });
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900">Terms and Conditions</h3>
-        
-        <div className="prose prose-sm text-gray-500">
-          <p>
-            By joining our wine club, you agree to the following terms:
-          </p>
-          <ul className="list-disc pl-5 space-y-2">
-            <li>You must be 21 years of age or older to join.</li>
-            <li>Membership fees will be billed according to the selected club's schedule.</li>
-            <li>Wine shipments will be sent to the provided shipping address.</li>
-            <li>You are responsible for ensuring someone 21 or older is available to sign for deliveries.</li>
-            <li>Membership benefits are subject to change with notice.</li>
-            <li>You may cancel your membership at any time by contacting us.</li>
-          </ul>
-        </div>
+  if (showTerms) {
+    return <TermsAndConditions onBack={() => setShowTerms(false)} />;
+  }
 
+  return (
+    <form onSubmit={handleSubmit} className="space-y-8">
+      <div className="space-y-6">
         <div className="flex items-center">
           <input
             type="checkbox"
@@ -36,10 +27,18 @@ const TermsAndSubmitStep = ({ formData, updateFormData, onBack, onSubmit, loadin
             checked={formData.termsAccepted}
             onChange={handleTermsChange}
             required
-            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
           />
-          <label htmlFor="termsAccepted" className="ml-2 block text-sm text-gray-700">
-            I accept the terms and conditions
+          <label htmlFor="termsAccepted" className="ml-3 text-base text-gray-900">
+            By checking this box, you agree to the{' '}
+            <button
+              type="button"
+              onClick={() => setShowTerms(true)}
+              className="text-primary hover:text-darkBrownHover underline"
+            >
+              Terms and Conditions
+            </button>
+            {' '}of the Milea Wine Club
           </label>
         </div>
 
@@ -61,15 +60,17 @@ const TermsAndSubmitStep = ({ formData, updateFormData, onBack, onSubmit, loadin
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="px-6 py-3 text-base font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
         >
           Back
         </button>
         <button
           type="submit"
           disabled={loading || !formData.termsAccepted}
-          className={`inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-            (loading || !formData.termsAccepted) ? 'opacity-50 cursor-not-allowed' : ''
+          className={`px-6 py-3 text-base font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors ${
+            loading || !formData.termsAccepted
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-primary hover:bg-darkBrownHover'
           }`}
         >
           {loading ? 'Processing...' : 'Complete Signup'}

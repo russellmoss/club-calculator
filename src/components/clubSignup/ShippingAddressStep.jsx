@@ -11,10 +11,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
     updateFormData({
       shippingAddress: {
         ...formData.shippingAddress,
-        [name]: value,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone
+        [name]: value
       }
     });
   };
@@ -24,33 +21,36 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
     updateFormData({
       useShippingAsBilling: useBilling,
       shippingAddress: useBilling ? { ...formData.billingAddress } : {
-        ...formData.shippingAddress,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone
+        address: '',
+        address2: '',
+        city: '',
+        stateCode: '',
+        zipCode: '',
+        countryCode: 'US',
+        isDefault: true
       }
     });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="flex items-center">
+    <form onSubmit={handleSubmit} className="space-y-8">
+      <div className="flex items-center space-x-3">
         <input
           type="checkbox"
           id="useBillingAddress"
           checked={formData.useShippingAsBilling}
           onChange={handleUseBillingAddress}
-          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
         />
-        <label htmlFor="useBillingAddress" className="ml-2 block text-sm text-gray-700">
+        <label htmlFor="useBillingAddress" className="text-base font-medium text-gray-900">
           Use billing address for shipping
         </label>
       </div>
 
       {!formData.useShippingAsBilling && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="md:col-span-2">
-            <label htmlFor="shippingAddress" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="shippingAddress" className="block text-base font-medium text-gray-900 mb-2">
               Street Address
             </label>
             <input
@@ -60,12 +60,13 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
               value={formData.shippingAddress.address}
               onChange={handleChange}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+              placeholder="Enter your street address"
             />
           </div>
 
           <div className="md:col-span-2">
-            <label htmlFor="shippingAddress2" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="shippingAddress2" className="block text-base font-medium text-gray-900 mb-2">
               Apartment, suite, etc. (optional)
             </label>
             <input
@@ -74,12 +75,13 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
               name="address2"
               value={formData.shippingAddress.address2}
               onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+              placeholder="Enter apartment or suite number"
             />
           </div>
 
           <div>
-            <label htmlFor="shippingCity" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="shippingCity" className="block text-base font-medium text-gray-900 mb-2">
               City
             </label>
             <input
@@ -89,12 +91,13 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
               value={formData.shippingAddress.city}
               onChange={handleChange}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+              placeholder="Enter your city"
             />
           </div>
 
           <div>
-            <label htmlFor="shippingState" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="shippingState" className="block text-base font-medium text-gray-900 mb-2">
               State
             </label>
             <input
@@ -104,12 +107,13 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
               value={formData.shippingAddress.stateCode}
               onChange={handleChange}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+              placeholder="Enter your state"
             />
           </div>
 
           <div>
-            <label htmlFor="shippingZip" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="shippingZip" className="block text-base font-medium text-gray-900 mb-2">
               ZIP Code
             </label>
             <input
@@ -119,23 +123,24 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
               value={formData.shippingAddress.zipCode}
               onChange={handleChange}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+              placeholder="Enter your ZIP code"
             />
           </div>
         </div>
       )}
 
-      <div className="flex justify-between">
+      <div className="flex justify-between mt-8">
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="px-6 py-3 text-base font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
         >
           Back
         </button>
         <button
           type="submit"
-          className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="px-6 py-3 text-base font-medium text-white bg-primary border border-transparent rounded-md hover:bg-darkBrownHover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
         >
           Next: Terms & Submit
         </button>

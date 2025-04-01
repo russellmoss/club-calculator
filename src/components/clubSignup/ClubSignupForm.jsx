@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import CustomerInfoStep from './CustomerInfoStep';
 import BillingAddressStep from './BillingAddressStep';
 import ShippingAddressStep from './ShippingAddressStep';
+import AllocationReceivalStep from './AllocationReceivalStep';
 import TermsAndSubmitStep from './TermsAndSubmitStep';
 import FormStepper from './FormStepper';
 import FormSuccess from './FormSuccess';
@@ -27,29 +28,23 @@ const ClubSignupForm = ({ clubId, onClose }) => {
     
     // Billing address
     billingAddress: {
-      firstName: '',
-      lastName: '',
       address: '',
       address2: '',
       city: '',
       stateCode: '',
       zipCode: '',
       countryCode: 'US',
-      phone: '',
       isDefault: true
     },
     
     // Shipping address
     shippingAddress: {
-      firstName: '',
-      lastName: '',
       address: '',
       address2: '',
       city: '',
       stateCode: '',
       zipCode: '',
       countryCode: 'US',
-      phone: '',
       isDefault: true
     },
     
@@ -141,6 +136,17 @@ const ClubSignupForm = ({ clubId, onClose }) => {
       )
     },
     {
+      label: 'Allocation Receival',
+      component: (
+        <AllocationReceivalStep 
+          formData={formData} 
+          updateFormData={updateFormData} 
+          onBack={handleBack} 
+          onNext={handleNext} 
+        />
+      )
+    },
+    {
       label: 'Terms & Submit',
       component: (
         <TermsAndSubmitStep 
@@ -161,12 +167,9 @@ const ClubSignupForm = ({ clubId, onClose }) => {
   }
   
   return (
-    <div className="w-full">
+    <div className="max-w-2xl mx-auto p-6">
       <FormStepper steps={steps.map(step => step.label)} activeStep={activeStep} />
-      
-      <div className="mt-6">
-        {steps[activeStep].component}
-      </div>
+      {steps[activeStep].component}
     </div>
   );
 };
