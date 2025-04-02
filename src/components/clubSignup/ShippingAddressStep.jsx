@@ -122,7 +122,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             <input
               type="text"
               id="shippingFirstName"
-              name="firstName"
+              name="shippingFirstName"
               value={formData.shippingFirstName}
               onChange={handleChange}
               required
@@ -138,7 +138,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             <input
               type="text"
               id="shippingLastName"
-              name="lastName"
+              name="shippingLastName"
               value={formData.shippingLastName}
               onChange={handleChange}
               required
@@ -154,7 +154,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             <input
               type="text"
               id="shippingAddress"
-              name="address"
+              name="shippingAddress"
               value={formData.shippingAddress}
               onChange={handleChange}
               required
@@ -170,7 +170,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             <input
               type="text"
               id="shippingAddress2"
-              name="address2"
+              name="shippingAddress2"
               value={formData.shippingAddress2}
               onChange={handleChange}
               className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
@@ -185,7 +185,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             <input
               type="text"
               id="shippingCity"
-              name="city"
+              name="shippingCity"
               value={formData.shippingCity}
               onChange={handleChange}
               required
@@ -201,7 +201,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             <input
               type="text"
               id="shippingState"
-              name="state"
+              name="shippingState"
               value={formData.shippingState}
               onChange={handleChange}
               required
@@ -217,7 +217,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             <input
               type="text"
               id="shippingZip"
-              name="zip"
+              name="shippingZip"
               value={formData.shippingZip}
               onChange={handleChange}
               required
@@ -233,7 +233,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             <input
               type="text"
               id="shippingCountry"
-              name="country"
+              name="shippingCountry"
               value={formData.shippingCountry}
               onChange={handleChange}
               required
