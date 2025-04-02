@@ -55,10 +55,15 @@ const ClubSignupForm = ({ clubId, onClose }) => {
   
   // Update form data
   const updateFormData = (data) => {
-    setFormData(prevState => ({
-      ...prevState,
-      ...data
-    }));
+    console.log('Updating form data:', data);
+    setFormData(prevState => {
+      const newState = {
+        ...prevState,
+        ...data
+      };
+      console.log('New form state:', newState);
+      return newState;
+    });
   };
   
   // Handle next step

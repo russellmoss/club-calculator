@@ -15,9 +15,9 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
       // Convert full state name to two-letter code if needed
       const stateCode = value.length > 2 ? stateNameToCode(value) : value.toUpperCase();
       console.log('Converted state code:', stateCode);
-      updateFormData(name, stateCode);
+      updateFormData({ [name]: stateCode });
     } else {
-      updateFormData(name, value);
+      updateFormData({ [name]: value });
     }
   };
 
