@@ -60,38 +60,39 @@ const processClubSignup = async (data) => {
 const transformClubSignupData = (data) => {
   console.log('Original data:', JSON.stringify(data, null, 2));
   
-  // Extract customer info from the nested structure
-  const customerInfo = data.customerInfo || {};
-  const billingAddress = data.billingAddress || {};
-  const shippingAddress = data.shippingAddress || {};
-
   // Transform the data to match the API's expected structure
   const transformedData = {
-    // Customer info
-    email: customerInfo.email,
-    firstName: customerInfo.firstName,
-    lastName: customerInfo.lastName,
-    phone: customerInfo.phone,
+    // Customer info at root level
+    email: data.email,
+    firstName: data.firstName,
+    lastName: data.lastName,
+    phone: data.phone,
     clubId: data.clubId,
+    orderDeliveryMethod: data.orderDeliveryMethod || 'Pickup',
 
     // Billing address
     billingAddress: {
-      address1: billingAddress.address1,
-      address2: billingAddress.address2,
-      city: billingAddress.city,
-      state: billingAddress.state,
-      zip: billingAddress.zip,
-      country: billingAddress.country || 'US'
+      address1: data.billingAddress.address,
+      address2: data.billingAddress.address2 || '',
+      city: data.billingAddress.city,
+      state: data.billingAddress.stateCode,
+      zip: data.billingAddress.zipCode,
+      country: data.billingAddress.countryCode || 'US'
     },
 
     // Shipping address (if different from billing)
-    shippingAddress: shippingAddress.sameAsBilling ? null : {
-      address1: shippingAddress.address1,
-      address2: shippingAddress.address2,
-      city: shippingAddress.city,
-      state: shippingAddress.state,
-      zip: shippingAddress.zip,
-      country: shippingAddress.country || 'US'
+    shippingAddress: data.shippingAddress ? {
+      address1: data.shippingAddress.address,
+      address2: data.shippingAddress.address2 || '',
+      city: data.shippingAddress.city,
+      state: data.shippingAddress.stateCode,
+      zip: data.shippingAddress.zipCode,
+      country: data.shippingAddress.countryCode || 'US'
+    } : null,
+
+    // Metadata
+    metadata: {
+      'club-calculator-sign-up': 'true'
     }
   };
 

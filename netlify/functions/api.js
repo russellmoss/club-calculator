@@ -258,7 +258,12 @@ app.post('/club-signup', async (req, res) => {
     } else {
       // Create new customer
       console.log('No customer found with that email. Creating new customer...');
-      const newCustomer = await createCustomer(data);
+      const newCustomer = await createCustomer({
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone
+      });
       customerId = newCustomer.id;
       console.log('Customer created successfully! ID:', customerId);
     }
@@ -266,7 +271,7 @@ app.post('/club-signup', async (req, res) => {
     // Add billing address
     console.log(`Adding billing address for customer: ${customerId}`);
     const billingAddress = await addCustomerAddress(customerId, data.billingAddress);
-    console.log('billing address added successfully! ID:', billingAddress.id);
+    console.log('Billing address added successfully! ID:', billingAddress.id);
 
     // Create club membership
     console.log(`Creating club membership for customer: ${customerId}, club: ${data.clubId}`);
@@ -275,7 +280,7 @@ app.post('/club-signup', async (req, res) => {
       clubId: data.clubId,
       billToCustomerAddressId: billingAddress.id,
       signupDate: new Date().toISOString(),
-      orderDeliveryMethod: 'Pickup',
+      orderDeliveryMethod: data.orderDeliveryMethod || 'Pickup',
       pickupInventoryLocationId: process.env.PICKUP_LOCATION_ID
     };
     console.log('Club membership payload:', JSON.stringify(clubMembershipPayload, null, 2));
@@ -289,7 +294,7 @@ app.post('/club-signup', async (req, res) => {
     console.log(`Customer: ${data.firstName} ${data.lastName} (${customerId})`);
     console.log(`Club Membership: ${clubMembership.id}`);
     console.log(`Club Tier: ${data.clubId}`);
-    console.log('Delivery Method: Pickup');
+    console.log(`Delivery Method: ${data.orderDeliveryMethod || 'Pickup'}`);
 
     res.json({
       success: true,
