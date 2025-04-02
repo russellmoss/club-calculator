@@ -26,19 +26,22 @@ const C7_TENANT_ID = process.env.C7_TENANT_ID;
 const PICKUP_LOCATION_ID = process.env.PICKUP_LOCATION_ID;
 
 // Log environment variables for debugging (don't include this in production)
-console.log('Environment variables:');
+console.log('=== Environment Variables ===');
 console.log('- APP_ID:', C7_APP_ID);
 console.log('- SECRET_KEY:', C7_SECRET_KEY ? 'Set (not shown for security)' : 'NOT SET');
 console.log('- TENANT_ID:', C7_TENANT_ID);
 console.log('- PICKUP_LOCATION_ID:', PICKUP_LOCATION_ID);
+console.log('===========================');
 
 // Validate required environment variables
 if (!C7_APP_ID || !C7_SECRET_KEY || !C7_TENANT_ID) {
+  console.error('=== Missing Environment Variables ===');
   console.error('Missing required environment variables:', {
     C7_APP_ID: !!C7_APP_ID,
     C7_SECRET_KEY: !!C7_SECRET_KEY,
     C7_TENANT_ID: !!C7_TENANT_ID
   });
+  console.error('===========================');
   throw new Error('Missing required environment variables');
 }
 

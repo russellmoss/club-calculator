@@ -9,6 +9,7 @@
 [functions]
   node_bundler = "esbuild"
   included_files = ["netlify/functions/.env"]
+  external_node_modules = ["express", "serverless-http", "cors", "axios"]
 
 [[redirects]]
   from = "/api/*"
