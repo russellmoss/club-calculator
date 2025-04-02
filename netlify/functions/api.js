@@ -10,6 +10,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({
+    success: false,
+    error: err.message || 'Internal server error'
+  });
+});
+
 // Commerce7 API configuration - updated to match Netlify environment variables
 const C7_APP_ID = process.env.C7_APP_ID;
 const C7_SECRET_KEY = process.env.C7_SECRET_KEY;
@@ -181,6 +190,7 @@ async function createClubMembership(
 app.post('/club-signup', async (req, res) => {
   try {
     console.log('Starting Wine Club Signup Process...');
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
     
     const {
       customerInfo,
@@ -193,7 +203,10 @@ app.post('/club-signup', async (req, res) => {
 
     // Validate required fields
     if (!customerInfo?.email) {
-      throw new Error('Missing required customer email');
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required customer email'
+      });
     }
 
     // Step 1: Check if customer exists
