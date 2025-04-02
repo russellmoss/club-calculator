@@ -1,5 +1,6 @@
+// API base URL configuration
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '/api'  // Use relative path that matches our redirect rule
+  ? '/api'  // Use relative path that works with Netlify redirects
   : 'http://localhost:8888/.netlify/functions/api';
 
 const processClubSignup = async (data) => {
@@ -62,13 +63,13 @@ const transformClubSignupData = (data) => {
   
   // Transform the data to match the API's expected structure
   const transformedData = {
-    // Customer info at root level
-    email: data.billingAddress.email || data.email,
-    firstName: data.billingAddress.firstName,
-    lastName: data.billingAddress.lastName,
-    phone: data.billingAddress.phone,
-    clubId: data.clubId,
-    orderDeliveryMethod: data.orderDeliveryMethod || 'Pickup',
+    // Customer info in a nested object
+    customerInfo: {
+      email: data.billingAddress.email || data.email,
+      firstName: data.billingAddress.firstName,
+      lastName: data.billingAddress.lastName,
+      phone: data.billingAddress.phone
+    },
 
     // Billing address
     billingAddress: {
@@ -89,6 +90,10 @@ const transformClubSignupData = (data) => {
       zip: data.shippingAddress.zipCode,
       country: data.shippingAddress.countryCode || 'US'
     } : null,
+
+    // Club and delivery info
+    clubId: data.clubId,
+    orderDeliveryMethod: data.orderDeliveryMethod || 'Pickup',
 
     // Metadata
     metadata: {

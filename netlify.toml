@@ -8,6 +8,7 @@
   to = "/.netlify/functions/api/:splat"
   status = 200
   force = true
+  conditions = {Not = [path = "/.netlify/functions/api/*"]}
 
 [[redirects]]
   from = "/*"

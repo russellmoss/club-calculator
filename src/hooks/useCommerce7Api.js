@@ -142,6 +142,9 @@ const useCommerce7Api = () => {
    */
   const processClubSignup = async (formData) => {
     try {
+      console.log('Starting club signup process...');
+      console.log('Form data received:', JSON.stringify(formData, null, 2));
+      
       setLoading(true);
       
       // Validate required customer info
@@ -149,6 +152,7 @@ const useCommerce7Api = () => {
       const missingCustomerFields = requiredCustomerFields.filter(field => !formData[field]?.trim());
       
       if (missingCustomerFields.length > 0) {
+        console.error('Missing required fields:', missingCustomerFields);
         throw new Error(`Missing required customer fields: ${missingCustomerFields.join(', ')}`);
       }
 
@@ -180,26 +184,53 @@ const useCommerce7Api = () => {
       };
       
       // Log the transformed data for debugging
-      console.log('Sending data to Commerce7:', transformedData);
+      console.log('Transformed data for API:', JSON.stringify(transformedData, null, 2));
+      console.log('Making API request to:', `${API_BASE_URL}/club-signup`);
       
       const response = await fetch(`${API_BASE_URL}/club-signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify(transformedData),
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+      const responseText = await response.text();
+      console.log('Raw response text:', responseText);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Club signup error details:', errorData);
-        throw new Error(errorData.error || 'Failed to process club signup');
+        console.error('API error:', {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          body: responseText
+        });
+        throw new Error(`API error: ${response.status} ${response.statusText}\n${responseText}`);
       }
 
-      const result = await response.json();
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('Failed to parse JSON:', {
+          error: parseError,
+          responseText: responseText
+        });
+        throw new Error('Received invalid JSON response from server');
+      }
+
+      console.log('Club signup successful:', result);
       return result;
     } catch (error) {
-      console.error('Error in processClubSignup:', error);
+      console.error('Error in processClubSignup:', {
+        error: error.message,
+        stack: error.stack,
+        data: formData
+      });
       throw error;
     } finally {
       setLoading(false);

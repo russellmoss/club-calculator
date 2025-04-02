@@ -166,17 +166,18 @@ async function addCustomerAddress(customerId, addressData, isBillingAddress = fa
     
     // Prepare address data with required fields
     const addressPayload = {
-      firstName: customer.firstName,
-      lastName: customer.lastName,
+      firstName: addressData.firstName || customer.firstName,
+      lastName: addressData.lastName || customer.lastName,
       address: addressData.address,
+      address2: addressData.address2 || '',
       city: addressData.city,
       stateCode: addressData.stateCode,
       zipCode: addressData.zipCode,
-      countryCode: "US",
+      countryCode: addressData.countryCode || "US",
       isDefault: isBillingAddress // Only set as default for billing addresses
     };
 
-    console.log('Address data:', JSON.stringify(addressPayload, null, 2));
+    console.log('Address payload:', JSON.stringify(addressPayload, null, 2));
     
     const response = await axios.post(
       `${C7_API_URL}/customer/${customerId}/address`,
@@ -195,6 +196,8 @@ async function addCustomerAddress(customerId, addressData, isBillingAddress = fa
 async function createClubMembership(customerId, clubId, billToCustomerAddressId, orderDeliveryMethod, shippingAddress = null) {
   try {
     console.log(`Creating club membership for customer: ${customerId}, club: ${clubId}`);
+    console.log('Delivery method:', orderDeliveryMethod);
+    console.log('Shipping address:', shippingAddress ? JSON.stringify(shippingAddress, null, 2) : 'None');
     
     // Convert "Ship to address" to "Ship" for Commerce7 API
     const deliveryMethod = orderDeliveryMethod === "Ship to address" ? "Ship" : orderDeliveryMethod;
@@ -210,16 +213,28 @@ async function createClubMembership(customerId, clubId, billToCustomerAddressId,
       }
     };
 
-    // Add shipping address if delivery method is "Ship"
+    // Handle delivery method specific fields
     if (deliveryMethod === "Ship") {
-      // If shipping address is null or sameAsBilling is true, use billing address
+      // For shipping, set shipToCustomerAddressId
       if (!shippingAddress || shippingAddress.sameAsBilling) {
+        // If no shipping address or same as billing, use billing address
         clubMembershipData.shipToCustomerAddressId = billToCustomerAddressId;
+        console.log('Using billing address for shipping');
       } else if (shippingAddress.id) {
+        // If shipping address provided, use it
         clubMembershipData.shipToCustomerAddressId = shippingAddress.id;
+        console.log('Using provided shipping address:', shippingAddress.id);
+      } else {
+        console.warn('No valid shipping address provided for Ship delivery method');
       }
     } else if (deliveryMethod === "Pickup") {
-      clubMembershipData.pickupInventoryLocationId = process.env.PICKUP_LOCATION_ID;
+      // For pickup, set pickupInventoryLocationId
+      if (process.env.PICKUP_LOCATION_ID) {
+        clubMembershipData.pickupInventoryLocationId = process.env.PICKUP_LOCATION_ID;
+        console.log('Set pickup location:', process.env.PICKUP_LOCATION_ID);
+      } else {
+        console.warn('PICKUP_LOCATION_ID not set in environment variables');
+      }
     }
 
     console.log('Club membership payload:', JSON.stringify(clubMembershipData, null, 2));
@@ -237,64 +252,137 @@ async function createClubMembership(customerId, clubId, billToCustomerAddressId,
 // Club signup endpoint
 app.post('/club-signup', async (req, res) => {
   try {
-    console.log('Starting Wine Club Signup Process...');
+    console.log('=== Starting Wine Club Signup Process ===');
+    console.log('Request headers:', JSON.stringify(req.headers, null, 2));
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
+    
     const data = req.body;
-    console.log('Received data:', JSON.stringify(data, null, 2));
 
     // Validate required fields
-    if (!data.email) {
-      console.error('Missing required field: email');
-      return res.status(400).json({ error: 'Email is required' });
+    if (!data.customerInfo?.email) {
+      console.error('Missing required field: customerInfo.email');
+      console.error('Received data:', JSON.stringify(data, null, 2));
+      return res.status(400).json({ 
+        success: false,
+        error: 'Email is required',
+        details: 'The customerInfo object must contain an email field'
+      });
     }
 
     // Search for existing customer
-    console.log(`Searching for customer with email: ${data.email}`);
-    const existingCustomer = await findCustomerByEmail(data.email);
+    console.log(`Searching for customer with email: ${data.customerInfo.email}`);
+    let existingCustomer;
+    try {
+      existingCustomer = await findCustomerByEmail(data.customerInfo.email);
+    } catch (error) {
+      console.error('Error searching for customer:', {
+        error: error.message,
+        response: error.response?.data
+      });
+      throw new Error('Failed to search for existing customer');
+    }
     
     let customerId;
     if (existingCustomer) {
-      console.log('Found existing customer:', existingCustomer.id);
+      console.log('Found existing customer:', {
+        id: existingCustomer.id,
+        name: `${existingCustomer.firstName} ${existingCustomer.lastName}`
+      });
       customerId = existingCustomer.id;
     } else {
       // Create new customer
-      console.log('No customer found with that email. Creating new customer...');
-      const newCustomer = await createCustomer({
-        email: data.email,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        phone: data.phone
-      });
-      customerId = newCustomer.id;
-      console.log('Customer created successfully! ID:', customerId);
+      console.log('No customer found. Creating new customer...');
+      try {
+        const newCustomer = await createCustomer({
+          email: data.customerInfo.email,
+          firstName: data.customerInfo.firstName,
+          lastName: data.customerInfo.lastName,
+          phone: data.customerInfo.phone
+        });
+        customerId = newCustomer.id;
+        console.log('Customer created successfully:', {
+          id: customerId,
+          name: `${newCustomer.firstName} ${newCustomer.lastName}`
+        });
+      } catch (error) {
+        console.error('Error creating customer:', {
+          error: error.message,
+          response: error.response?.data,
+          data: data.customerInfo
+        });
+        throw new Error('Failed to create new customer');
+      }
     }
 
     // Add billing address
     console.log(`Adding billing address for customer: ${customerId}`);
-    const billingAddress = await addCustomerAddress(customerId, data.billingAddress);
-    console.log('Billing address added successfully! ID:', billingAddress.id);
+    let billingAddress;
+    try {
+      billingAddress = await addCustomerAddress(customerId, data.billingAddress);
+      console.log('Billing address added successfully:', {
+        id: billingAddress.id,
+        address: `${billingAddress.address}, ${billingAddress.city}, ${billingAddress.stateCode} ${billingAddress.zipCode}`
+      });
+    } catch (error) {
+      console.error('Error adding billing address:', {
+        error: error.message,
+        response: error.response?.data,
+        address: data.billingAddress
+      });
+      throw new Error('Failed to add billing address');
+    }
 
     // Create club membership
     console.log(`Creating club membership for customer: ${customerId}, club: ${data.clubId}`);
-    const clubMembershipPayload = {
-      customerId,
-      clubId: data.clubId,
-      billToCustomerAddressId: billingAddress.id,
-      signupDate: new Date().toISOString(),
-      orderDeliveryMethod: data.orderDeliveryMethod || 'Pickup',
-      pickupInventoryLocationId: process.env.PICKUP_LOCATION_ID
-    };
-    console.log('Club membership payload:', JSON.stringify(clubMembershipPayload, null, 2));
+    let clubMembership;
+    try {
+      const clubMembershipPayload = {
+        customerId,
+        clubId: data.clubId,
+        billToCustomerAddressId: billingAddress.id,
+        signupDate: new Date().toISOString(),
+        orderDeliveryMethod: data.orderDeliveryMethod || 'Pickup',
+        pickupInventoryLocationId: process.env.PICKUP_LOCATION_ID
+      };
+      console.log('Club membership payload:', JSON.stringify(clubMembershipPayload, null, 2));
 
-    const clubMembership = await createClubMembership(clubMembershipPayload);
-    console.log('Club membership created successfully! ID:', clubMembership.id);
+      clubMembership = await createClubMembership(clubMembershipPayload);
+      console.log('Club membership created successfully:', {
+        id: clubMembership.id,
+        customerId,
+        clubId: data.clubId
+      });
+    } catch (error) {
+      console.error('Error creating club membership:', {
+        error: error.message,
+        response: error.response?.data,
+        payload: {
+          customerId,
+          clubId: data.clubId,
+          billToCustomerAddressId: billingAddress.id
+        }
+      });
+      throw new Error('Failed to create club membership');
+    }
 
     // Return success response
-    console.log('Club signup process completed successfully!');
-    console.log('Summary:');
-    console.log(`Customer: ${data.firstName} ${data.lastName} (${customerId})`);
-    console.log(`Club Membership: ${clubMembership.id}`);
-    console.log(`Club Tier: ${data.clubId}`);
-    console.log(`Delivery Method: ${data.orderDeliveryMethod || 'Pickup'}`);
+    console.log('=== Club Signup Process Completed Successfully ===');
+    console.log('Summary:', {
+      customer: {
+        id: customerId,
+        name: `${data.customerInfo.firstName} ${data.customerInfo.lastName}`,
+        email: data.customerInfo.email
+      },
+      membership: {
+        id: clubMembership.id,
+        clubId: data.clubId,
+        deliveryMethod: data.orderDeliveryMethod || 'Pickup'
+      },
+      billingAddress: {
+        id: billingAddress.id,
+        address: `${billingAddress.address}, ${billingAddress.city}, ${billingAddress.stateCode} ${billingAddress.zipCode}`
+      }
+    });
 
     res.json({
       success: true,
@@ -303,10 +391,17 @@ app.post('/club-signup', async (req, res) => {
       message: 'Club membership created successfully'
     });
   } catch (error) {
-    console.error('Error in club signup process:', error);
+    console.error('=== Error in Club Signup Process ===');
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      response: error.response?.data
+    });
+    
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to create club membership'
+      error: error.message || 'Failed to create club membership',
+      details: error.response?.data || 'No additional details available'
     });
   }
 });
@@ -319,7 +414,7 @@ app.post('/api/club-signup', async (req, res) => {
 });
 
 // Test endpoint to verify Commerce7 API credentials
-app.get('/api/test-auth', async (req, res) => {
+app.get('/test-auth', async (req, res) => {
   try {
     console.log('=== Testing Commerce7 API Authentication ===');
     console.log('Making test request to Commerce7 API...');

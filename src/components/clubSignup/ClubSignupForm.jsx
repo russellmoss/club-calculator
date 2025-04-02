@@ -83,17 +83,47 @@ const ClubSignupForm = ({ clubId, onClose }) => {
       setLoading(true);
       setError(null);
       
-      // If using billing as shipping, copy the data
-      const submissionData = { ...formData };
-      if (formData.useShippingAsBilling) {
-        submissionData.shippingAddress = { ...formData.billingAddress };
-      }
+      // Structure the data with customerInfo object
+      const submissionData = {
+        // Customer info in a nested object
+        customerInfo: {
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
+          birthDate: formData.birthDate
+        },
+
+        // Billing address
+        billingAddress: {
+          ...formData.billingAddress,
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone
+        },
+
+        // Shipping address (if different from billing)
+        shippingAddress: formData.useShippingAsBilling ? null : {
+          ...formData.shippingAddress,
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone
+        },
+
+        // Club and delivery info
+        clubId: formData.clubId,
+        orderDeliveryMethod: formData.orderDeliveryMethod || 'Pickup',
+
+        // Metadata
+        metadata: {
+          'club-calculator-sign-up': 'true'
+        }
+      };
       
       // Process the signup
-      await processClubSignup({
-        ...submissionData,
-        clubId
-      });
+      await processClubSignup(submissionData);
       
       showToast('Club membership created successfully!', 'success');
       setSuccess(true);
