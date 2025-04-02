@@ -1,22 +1,30 @@
 [build]
   command = "npm run build"
   publish = "build"
-  functions = "netlify/functions"
-
-[[plugins]]
-  package = "@netlify/plugin-functions-install-core"
-
-[functions]
-  node_bundler = "esbuild"
-  included_files = ["netlify/functions/.env"]
-  external_node_modules = ["express", "serverless-http", "cors", "axios"]
 
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200 
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+
+[functions]
+  node_bundler = "esbuild"
+
+[functions.environment]
+  C7_APP_ID = "club-test"
+  C7_SECRET_KEY = "zPfLmVXA3Yg8ht0NWEs1RJxqCuiQob7TKpdlZB65wOeMcHFUnr49kyavGj2StEMn"
+  C7_TENANT_ID = "milea-estate-vineyard"
+  PICKUP_LOCATION_ID = "e75bfc54-009d-43db-8ed7-113158cce63e"
+
+[dev]
+  port = 8888
+  targetPort = 3000
+  framework = "create-react-app"
+  environment = { C7_APP_ID = "club-test", C7_SECRET_KEY = "zPfLmVXA3Yg8ht0NWEs1RJxqCuiQob7TKpdlZB65wOeMcHFUnr49kyavGj2StEMn", C7_TENANT_ID = "milea-estate-vineyard", PICKUP_LOCATION_ID = "e75bfc54-009d-43db-8ed7-113158cce63e" } 
