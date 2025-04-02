@@ -8,9 +8,76 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    updateFormData({
-      [`shipping${name.charAt(0).toUpperCase() + name.slice(1)}`]: value
-    });
+    const key = name.replace('shipping', '').toLowerCase();
+    console.log(`Updating shipping ${key}:`, value);
+    
+    // Special handling for state code
+    if (key === 'statecode') {
+      // Convert full state name to two-letter code if needed
+      const stateCode = value.length > 2 ? stateNameToCode(value) : value.toUpperCase();
+      console.log('Converted state code:', stateCode);
+      updateFormData(`shipping${key.charAt(0).toUpperCase() + key.slice(1)}`, stateCode);
+    } else {
+      updateFormData(`shipping${key.charAt(0).toUpperCase() + key.slice(1)}`, value);
+    }
+  };
+
+  // Add state name to code mapping function
+  const stateNameToCode = (stateName) => {
+    const stateMap = {
+      'Alabama': 'AL',
+      'Alaska': 'AK',
+      'Arizona': 'AZ',
+      'Arkansas': 'AR',
+      'California': 'CA',
+      'Colorado': 'CO',
+      'Connecticut': 'CT',
+      'Delaware': 'DE',
+      'Florida': 'FL',
+      'Georgia': 'GA',
+      'Hawaii': 'HI',
+      'Idaho': 'ID',
+      'Illinois': 'IL',
+      'Indiana': 'IN',
+      'Iowa': 'IA',
+      'Kansas': 'KS',
+      'Kentucky': 'KY',
+      'Louisiana': 'LA',
+      'Maine': 'ME',
+      'Maryland': 'MD',
+      'Massachusetts': 'MA',
+      'Michigan': 'MI',
+      'Minnesota': 'MN',
+      'Mississippi': 'MS',
+      'Missouri': 'MO',
+      'Montana': 'MT',
+      'Nebraska': 'NE',
+      'Nevada': 'NV',
+      'New Hampshire': 'NH',
+      'New Jersey': 'NJ',
+      'New Mexico': 'NM',
+      'New York': 'NY',
+      'North Carolina': 'NC',
+      'North Dakota': 'ND',
+      'Ohio': 'OH',
+      'Oklahoma': 'OK',
+      'Oregon': 'OR',
+      'Pennsylvania': 'PA',
+      'Rhode Island': 'RI',
+      'South Carolina': 'SC',
+      'South Dakota': 'SD',
+      'Tennessee': 'TN',
+      'Texas': 'TX',
+      'Utah': 'UT',
+      'Vermont': 'VT',
+      'Virginia': 'VA',
+      'Washington': 'WA',
+      'West Virginia': 'WV',
+      'Wisconsin': 'WI',
+      'Wyoming': 'WY',
+      'District of Columbia': 'DC'
+    };
+    return stateMap[stateName] || stateName;
   };
 
   const handleUseBillingAddress = (e) => {
