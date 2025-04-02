@@ -3,8 +3,8 @@ import axios from 'axios';
 
 // Use local development server in development, Netlify Functions in production
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '/api'
-  : 'http://localhost:8888/api';
+  ? '/api'  // This will use Netlify's redirect rules
+  : 'http://localhost:8888/.netlify/functions/api';
 
 const useCommerce7Api = () => {
   const [loading, setLoading] = useState(false);
@@ -147,35 +147,17 @@ const useCommerce7Api = () => {
       
       setLoading(true);
       
-      // Validate required customer info
-      const requiredCustomerFields = ['firstName', 'lastName', 'email'];
-      const missingCustomerFields = requiredCustomerFields.filter(field => !formData[field]?.trim());
-      
-      if (missingCustomerFields.length > 0) {
-        console.error('Missing required fields:', missingCustomerFields);
-        throw new Error(`Missing required customer fields: ${missingCustomerFields.join(', ')}`);
-      }
-
-      // Transform the data to match Commerce7's expected format
+      // Create a properly structured data object
       const transformedData = {
         customerInfo: {
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
-          email: formData.email.trim(),
-          phone: formData.phone?.trim() || '',
-          birthDate: formData.birthDate?.trim() || null
+          email: formData.email || formData.customerInfo?.email,
+          firstName: formData.firstName || formData.customerInfo?.firstName,
+          lastName: formData.lastName || formData.customerInfo?.lastName,
+          phone: formData.phone || formData.customerInfo?.phone || '',
+          birthDate: formData.birthDate || formData.customerInfo?.birthDate || null
         },
-        billingAddress: transformAddressData(formData.billingAddress, {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phone: formData.phone
-        }),
-        shippingAddress: formData.orderDeliveryMethod === 'Ship' ? 
-          transformAddressData(formData.shippingAddress, {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            phone: formData.phone
-          }) : null,
+        billingAddress: formData.billingAddress,
+        shippingAddress: formData.useShippingAsBilling ? null : formData.shippingAddress,
         clubId: formData.clubId,
         orderDeliveryMethod: formData.orderDeliveryMethod,
         metadata: {
@@ -183,7 +165,16 @@ const useCommerce7Api = () => {
         }
       };
       
-      // Log the transformed data for debugging
+      // Validate required customer info
+      const { email, firstName, lastName } = transformedData.customerInfo;
+      if (!email || !firstName || !lastName) {
+        throw new Error(`Missing required customer fields: ${[
+          !email && 'email',
+          !firstName && 'firstName',
+          !lastName && 'lastName'
+        ].filter(Boolean).join(', ')}`);
+      }
+      
       console.log('Transformed data for API:', JSON.stringify(transformedData, null, 2));
       console.log('Making API request to:', `${API_BASE_URL}/club-signup`);
       

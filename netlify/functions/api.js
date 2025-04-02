@@ -257,18 +257,25 @@ app.post('/club-signup', async (req, res) => {
     console.log('Request body:', JSON.stringify(req.body, null, 2));
     
     const data = req.body;
+    
+    // Handle both nested and flat data structures
+    const customerEmail = data.customerInfo?.email || data.email;
+    const customerFirstName = data.customerInfo?.firstName || data.firstName;
+    const customerLastName = data.customerInfo?.lastName || data.lastName;
+    const customerPhone = data.customerInfo?.phone || data.phone;
 
     // Validate required fields
-    if (!data.customerInfo?.email) {
-      console.error('Missing required field: customerInfo.email');
+    if (!customerEmail) {
+      console.error('Missing required field: email');
       console.error('Received data:', JSON.stringify(data, null, 2));
       return res.status(400).json({ 
         success: false,
         error: 'Email is required',
-        details: 'The customerInfo object must contain an email field'
+        details: 'The request must contain an email field'
       });
     }
 
+    // Rest of the function using these extracted variables
     // Search for existing customer
     console.log(`Searching for customer with email: ${data.customerInfo.email}`);
     let existingCustomer;
