@@ -79,7 +79,9 @@ const ClubSignupForm = ({ clubId, onClose }) => {
   
   // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
     setLoading(true);
     setError(null);
     
@@ -96,15 +98,12 @@ const ClubSignupForm = ({ clubId, onClose }) => {
         billingAddress: {
           firstName: formData.firstName,
           lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.billingAddress.address,
+          address: formData.billingAddress,
           address2: formData.billingAddress.address2 || '',
           city: formData.billingAddress.city,
           stateCode: formData.billingAddress.stateCode,
           zipCode: formData.billingAddress.zipCode,
-          countryCode: formData.billingAddress.countryCode || 'US',
-          isDefault: true
+          countryCode: formData.billingAddress.countryCode || 'US'
         },
         shippingAddress: formData.useShippingAsBilling ? null : {
           firstName: formData.shippingAddress.firstName,
@@ -116,8 +115,7 @@ const ClubSignupForm = ({ clubId, onClose }) => {
           city: formData.shippingAddress.city,
           stateCode: formData.shippingAddress.stateCode,
           zipCode: formData.shippingAddress.zipCode,
-          countryCode: formData.shippingAddress.countryCode || 'US',
-          isDefault: false
+          countryCode: formData.shippingAddress.countryCode || 'US'
         },
         clubId: formData.clubId,
         orderDeliveryMethod: formData.orderDeliveryMethod,
@@ -130,15 +128,19 @@ const ClubSignupForm = ({ clubId, onClose }) => {
       console.log('Submitting with metaData:', JSON.stringify(submissionData.metaData, null, 2));
       console.log('Full submission data:', JSON.stringify(submissionData, null, 2));
       
-      const result = await processClubSignup(submissionData);
+      const response = await processClubSignup(submissionData);
       
-      console.log('Club signup successful:', result);
-      showToast('Club membership created successfully!', 'success');
-      setSuccess(true);
-    } catch (error) {
-      console.error('Club signup error:', error);
-      setError(error.message || 'Failed to process club signup');
-      showToast(error.message || 'Failed to process club signup', 'error');
+      if (response.success) {
+        showToast('Club membership created successfully!', 'success');
+        setSuccess(true);
+      } else {
+        setError(response.error || 'Failed to process signup');
+        showToast(response.error || 'Failed to process signup', 'error');
+      }
+    } catch (err) {
+      console.error('Error in form submission:', err);
+      setError(err.message || 'An error occurred during signup');
+      showToast(err.message || 'An error occurred during signup', 'error');
     } finally {
       setLoading(false);
     }

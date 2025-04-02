@@ -147,36 +147,42 @@ const useCommerce7Api = () => {
       
       setLoading(true);
       
-      // Create a properly structured data object
+      // Transform data
       const transformedData = {
         customerInfo: {
-          email: formData.email || formData.customerInfo?.email,
-          firstName: formData.firstName || formData.customerInfo?.firstName,
-          lastName: formData.lastName || formData.customerInfo?.lastName,
-          phone: formData.phone || formData.customerInfo?.phone || '',
-          birthDate: formData.birthDate || formData.customerInfo?.birthDate || null
+          firstName: formData.customerInfo.firstName,
+          lastName: formData.customerInfo.lastName,
+          email: formData.customerInfo.email,
+          birthDate: formData.customerInfo.birthDate
         },
-        billingAddress: formData.billingAddress,
-        shippingAddress: formData.useShippingAsBilling ? null : formData.shippingAddress,
+        billingAddress: {
+          firstName: formData.billingAddress.firstName,
+          lastName: formData.billingAddress.lastName,
+          address: formData.billingAddress.address,
+          address2: formData.billingAddress.address2 || '',
+          city: formData.billingAddress.city,
+          stateCode: formData.billingAddress.stateCode,
+          zipCode: formData.billingAddress.zipCode,
+          countryCode: formData.billingAddress.countryCode || 'US'
+        },
+        shippingAddress: formData.shippingAddress ? {
+          firstName: formData.shippingAddress.firstName,
+          lastName: formData.shippingAddress.lastName,
+          address: formData.shippingAddress.address,
+          address2: formData.shippingAddress.address2 || '',
+          city: formData.shippingAddress.city,
+          stateCode: formData.shippingAddress.stateCode,
+          zipCode: formData.shippingAddress.zipCode,
+          countryCode: formData.shippingAddress.countryCode || 'US'
+        } : null,
         clubId: formData.clubId,
         orderDeliveryMethod: formData.orderDeliveryMethod,
         metaData: formData.metaData || {
           'club-calculator-sign-up': 'true'
         }
       };
-      
-      // Validate required customer info
-      const { email, firstName, lastName } = transformedData.customerInfo;
-      if (!email || !firstName || !lastName) {
-        throw new Error(`Missing required customer fields: ${[
-          !email && 'email',
-          !firstName && 'firstName',
-          !lastName && 'lastName'
-        ].filter(Boolean).join(', ')}`);
-      }
-      
-      console.log('Transformed data for API:', JSON.stringify(transformedData, null, 2));
-      console.log('Sending data with metaData:', JSON.stringify(transformedData.metaData, null, 2));
+
+      console.log('Transformed data:', JSON.stringify(transformedData, null, 2));
       console.log('Making API request to:', `${API_BASE_URL}/club-signup`);
       
       const response = await fetch(`${API_BASE_URL}/club-signup`, {
@@ -194,29 +200,25 @@ const useCommerce7Api = () => {
       const responseText = await response.text();
       console.log('Raw response text:', responseText);
 
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('Error parsing response JSON:', parseError);
+        throw new Error('Invalid JSON response from server');
+      }
+
       if (!response.ok) {
-        console.error('API error:', {
+        console.error('API request failed:', {
           status: response.status,
           statusText: response.statusText,
-          headers: Object.fromEntries(response.headers.entries()),
-          body: responseText
+          data: responseData
         });
-        throw new Error(`API error: ${response.status} ${response.statusText}\n${responseText}`);
+        throw new Error(responseData.error || 'Failed to process club signup');
       }
 
-      let result;
-      try {
-        result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Failed to parse JSON:', {
-          error: parseError,
-          responseText: responseText
-        });
-        throw new Error('Received invalid JSON response from server');
-      }
-
-      console.log('Club signup successful:', result);
-      return result;
+      console.log('API request successful:', responseData);
+      return responseData;
     } catch (error) {
       console.error('Error in processClubSignup:', {
         error: error.message,
