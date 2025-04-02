@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Use local development server in development, Netlify Functions in production
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '/.netlify/functions/api'
+  ? '/.netlify/functions'
   : 'http://localhost:5000';
 
 const useCommerce7Api = () => {
