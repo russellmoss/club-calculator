@@ -160,7 +160,7 @@ const useCommerce7Api = () => {
         shippingAddress: formData.useShippingAsBilling ? null : formData.shippingAddress,
         clubId: formData.clubId,
         orderDeliveryMethod: formData.orderDeliveryMethod,
-        metadata: {
+        metaData: formData.metaData || {
           'club-calculator-sign-up': 'true'
         }
       };
@@ -176,6 +176,7 @@ const useCommerce7Api = () => {
       }
       
       console.log('Transformed data for API:', JSON.stringify(transformedData, null, 2));
+      console.log('Sending data with metaData:', JSON.stringify(transformedData.metaData, null, 2));
       console.log('Making API request to:', `${API_BASE_URL}/club-signup`);
       
       const response = await fetch(`${API_BASE_URL}/club-signup`, {

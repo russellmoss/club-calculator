@@ -193,8 +193,10 @@ async function addCustomerAddress(customerId, addressData, isBillingAddress = fa
   }
 }
 
-async function createClubMembership(customerId, clubId, billToAddressId, orderDeliveryMethod, shippingAddressId = null) {
+async function createClubMembership(customerId, clubId, billToAddressId, orderDeliveryMethod, shippingAddressId = null, metaData = null) {
   try {
+    console.log('Creating club membership with metaData:', metaData);
+    
     // Check if first parameter is an object (old way of calling)
     if (typeof customerId === 'object') {
       const payload = customerId;
@@ -203,6 +205,7 @@ async function createClubMembership(customerId, clubId, billToAddressId, orderDe
       clubId = payload.clubId;
       billToAddressId = payload.billToCustomerAddressId;
       orderDeliveryMethod = payload.orderDeliveryMethod;
+      metaData = payload.metaData;
       
       if (payload.pickupInventoryLocationId) {
         // This is a pickup order
@@ -232,7 +235,10 @@ async function createClubMembership(customerId, clubId, billToAddressId, orderDe
       clubId,
       billToCustomerAddressId: billToAddressId,
       signupDate: new Date().toISOString(),
-      orderDeliveryMethod: orderDeliveryMethod
+      orderDeliveryMethod: orderDeliveryMethod,
+      metaData: {
+        'club-calculator-sign-up': 'true'
+      }
     };
 
     // Handle delivery method specific fields
@@ -250,11 +256,18 @@ async function createClubMembership(customerId, clubId, billToAddressId, orderDe
       console.log('Set shipping address:', shippingAddressId);
     }
 
+    // Add metaData if provided
+    if (metaData) {
+      clubMembershipData.metaData = metaData;
+      console.log('Added metaData to club membership:', metaData);
+    }
+
     if (typeof clubMembershipData.customerId !== 'string') {
       throw new Error(`Invalid customerId: ${typeof clubMembershipData.customerId}, must be a string`);
     }
 
-    console.log('Club membership payload:', JSON.stringify(clubMembershipData, null, 2));
+    console.log('Using Commerce7 compliant metadata format');
+    console.log('Club membership data with metaData:', JSON.stringify(clubMembershipData, null, 2));
     
     const response = await axios.post(
       `${C7_API_URL}/club-membership`,
@@ -343,7 +356,9 @@ app.post('/club-signup', async (req, res) => {
         customer.id,
         data.clubId,
         billingAddress.id,
-        data.orderDeliveryMethod || 'Pickup'
+        data.orderDeliveryMethod || 'Pickup',
+        data.shippingAddress ? data.shippingAddress.id : null,
+        { 'club-calculator-sign-up': 'true' }
       );
       
       console.log('Club membership created successfully:', {
@@ -351,6 +366,14 @@ app.post('/club-signup', async (req, res) => {
         customerId: customer.id,
         clubId: data.clubId
       });
+
+      // Verify metaData was properly set
+      console.log('Club membership created with metaData:', clubMembership.metaData);
+
+      // Add additional check for metaData
+      if (!clubMembership.metaData || !clubMembership.metaData['club-calculator-sign-up']) {
+        console.warn('Warning: club-calculator-sign-up metaData not found in created membership');
+      }
     } catch (error) {
       console.error('Error creating club membership:', {
         error: error.message,

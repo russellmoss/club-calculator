@@ -78,60 +78,67 @@ const ClubSignupForm = ({ clubId, onClose }) => {
   };
   
   // Handle form submission
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      setError(null);
-      
-      // Structure the data with customerInfo object
+      // Create submission data with explicit metadata
       const submissionData = {
-        // Customer info in a nested object
         customerInfo: {
-          email: formData.email,
           firstName: formData.firstName,
           lastName: formData.lastName,
+          email: formData.email,
           phone: formData.phone,
           birthDate: formData.birthDate
         },
-
-        // Billing address
         billingAddress: {
-          ...formData.billingAddress,
-          email: formData.email,
           firstName: formData.firstName,
           lastName: formData.lastName,
-          phone: formData.phone
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.billingAddress.address,
+          address2: formData.billingAddress.address2 || '',
+          city: formData.billingAddress.city,
+          stateCode: formData.billingAddress.stateCode,
+          zipCode: formData.billingAddress.zipCode,
+          countryCode: formData.billingAddress.countryCode || 'US',
+          isDefault: true
         },
-
-        // Shipping address (if different from billing)
         shippingAddress: formData.useShippingAsBilling ? null : {
-          ...formData.shippingAddress,
+          firstName: formData.shippingAddress.firstName,
+          lastName: formData.shippingAddress.lastName,
           email: formData.email,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phone: formData.phone
+          phone: formData.phone,
+          address: formData.shippingAddress.address,
+          address2: formData.shippingAddress.address2 || '',
+          city: formData.shippingAddress.city,
+          stateCode: formData.shippingAddress.stateCode,
+          zipCode: formData.shippingAddress.zipCode,
+          countryCode: formData.shippingAddress.countryCode || 'US',
+          isDefault: false
         },
-
-        // Club and delivery info
         clubId: formData.clubId,
-        orderDeliveryMethod: formData.orderDeliveryMethod || 'Pickup',
-
-        // Metadata
-        metadata: {
+        orderDeliveryMethod: formData.orderDeliveryMethod,
+        useShippingAsBilling: formData.useShippingAsBilling,
+        metaData: {
           'club-calculator-sign-up': 'true'
         }
       };
+
+      console.log('Submitting with metaData:', JSON.stringify(submissionData.metaData, null, 2));
+      console.log('Full submission data:', JSON.stringify(submissionData, null, 2));
       
-      // Process the signup
-      await processClubSignup(submissionData);
+      const result = await processClubSignup(submissionData);
       
+      console.log('Club signup successful:', result);
       showToast('Club membership created successfully!', 'success');
       setSuccess(true);
-      
-    } catch (err) {
-      const errorMessage = err.message || 'An error occurred during signup.';
-      setError(errorMessage);
-      showToast(errorMessage, 'error');
+    } catch (error) {
+      console.error('Club signup error:', error);
+      setError(error.message || 'Failed to process club signup');
+      showToast(error.message || 'Failed to process club signup', 'error');
     } finally {
       setLoading(false);
     }
