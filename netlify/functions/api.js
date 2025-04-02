@@ -159,21 +159,26 @@ async function updateCustomer(customerId, customerData) {
 async function addCustomerAddress(customerId, addressData, isBillingAddress = false) {
   try {
     console.log(`Adding ${isBillingAddress ? 'billing' : 'shipping'} address for customer: ${customerId}`);
+    console.log('Address data received:', JSON.stringify(addressData, null, 2));
     
     // Get customer details to include in address
     const customerResponse = await axios.get(`${C7_API_URL}/customer/${customerId}`, authConfig);
     const customer = customerResponse.data;
     
+    // Extract the address from nested object if needed
+    const streetAddress = addressData.address.address || addressData.address;
+    const streetAddress2 = addressData.address2 || addressData.address.address2 || '';
+    
     // Prepare address data with required fields
     const addressPayload = {
       firstName: addressData.firstName || customer.firstName,
       lastName: addressData.lastName || customer.lastName,
-      address: addressData.address,
-      address2: addressData.address2 || '',
-      city: addressData.city,
-      stateCode: addressData.stateCode,
-      zipCode: addressData.zipCode,
-      countryCode: addressData.countryCode || "US",
+      address: streetAddress, // Use the extracted address string
+      address2: streetAddress2,
+      city: addressData.city || addressData.address.city,
+      stateCode: addressData.stateCode || addressData.address.stateCode,
+      zipCode: addressData.zipCode || addressData.address.zipCode,
+      countryCode: addressData.countryCode || addressData.address.countryCode || "US",
       isDefault: isBillingAddress // Only set as default for billing addresses
     };
 
