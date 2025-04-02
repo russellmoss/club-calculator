@@ -1,4 +1,6 @@
-const API_BASE_URL = '/api';
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://club-calculator.netlify.app/.netlify/functions/api'
+  : 'http://localhost:8888/.netlify/functions/api';
 
 const processClubSignup = async (data) => {
   try {
