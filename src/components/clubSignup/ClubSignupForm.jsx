@@ -210,7 +210,7 @@ const ClubSignupForm = ({ clubId, onClose }) => {
   }
   
   return (
-    <div className="relative max-w-2xl mx-auto p-6">
+    <div className="relative max-w-2xl mx-auto p-4 sm:p-6">
       {/* Loading Overlay */}
       {loading && (
         <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50 rounded-lg">
@@ -222,7 +222,9 @@ const ClubSignupForm = ({ clubId, onClose }) => {
       )}
       
       <FormStepper steps={steps.map(step => step.label)} activeStep={activeStep} />
-      {steps[activeStep].component}
+      <div className="mt-6">
+        {steps[activeStep].component}
+      </div>
     </div>
   );
 };

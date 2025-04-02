@@ -98,8 +98,8 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      <div className="flex items-center space-x-3">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="flex items-center space-x-3 mb-4">
         <input
           type="checkbox"
           id="useBillingAddress"
@@ -113,7 +113,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
       </div>
 
       {!formData.sameAsBilling && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-6">
           <div>
             <label htmlFor="shippingFirstName" className="block text-base font-medium text-gray-900 mb-2">
               First Name
@@ -146,7 +146,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             />
           </div>
 
-          <div className="md:col-span-2">
+          <div>
             <label htmlFor="shippingAddress" className="block text-base font-medium text-gray-900 mb-2">
               Street Address
             </label>
@@ -162,7 +162,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             />
           </div>
 
-          <div className="md:col-span-2">
+          <div>
             <label htmlFor="shippingAddress2" className="block text-base font-medium text-gray-900 mb-2">
               Apartment, suite, etc. (optional)
             </label>
@@ -243,17 +243,17 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
         </div>
       )}
 
-      <div className="flex justify-between mt-8">
+      <div className="flex flex-col sm:flex-row justify-between gap-4 mt-8">
         <button
           type="button"
           onClick={onBack}
-          className="px-6 py-3 text-base font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
+          className="w-full sm:w-auto px-6 py-3 text-base font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
         >
           Back
         </button>
         <button
           type="submit"
-          className="px-6 py-3 text-base font-medium text-white bg-primary border border-transparent rounded-md hover:bg-darkBrownHover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
+          className="w-full sm:w-auto px-6 py-3 text-base font-medium text-white bg-primary border border-transparent rounded-md hover:bg-darkBrownHover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
         >
           Next: Terms & Submit
         </button>
