@@ -26,7 +26,7 @@ const EventsForm = () => {
                 id="culinarySeries"
                 checked={formData.selectedEvents.culinarySeries}
                 onChange={(e) => updateEventSelection('culinarySeries', e.target.checked)}
-                className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+                className="h-4 w-4 text-primary border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200"
               />
             </div>
             <div className="ml-3">
@@ -46,7 +46,7 @@ const EventsForm = () => {
                 id="pickupParties"
                 checked={formData.selectedEvents.pickupParties}
                 onChange={(e) => updateEventSelection('pickupParties', e.target.checked)}
-                className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+                className="h-4 w-4 text-primary border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200"
               />
             </div>
             <div className="ml-3">
@@ -54,7 +54,7 @@ const EventsForm = () => {
                 Pickup Parties
               </label>
               <p className="text-gray-500 text-sm">
-                Music, Special menus, Special tastings and community
+                Quarterly celebrations with food, wine, and live music
               </p>
             </div>
           </div>
@@ -66,7 +66,7 @@ const EventsForm = () => {
                 id="roseDay"
                 checked={formData.selectedEvents.roseDay}
                 onChange={(e) => updateEventSelection('roseDay', e.target.checked)}
-                className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+                className="h-4 w-4 text-primary border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200"
               />
             </div>
             <div className="ml-3">
@@ -74,7 +74,7 @@ const EventsForm = () => {
                 Rosé Day
               </label>
               <p className="text-gray-500 text-sm">
-                Celebrate the annual release of our Rosé
+                A celebration of all things rosé
               </p>
             </div>
           </div>
@@ -86,7 +86,7 @@ const EventsForm = () => {
                 id="fizzFest"
                 checked={formData.selectedEvents.fizzFest}
                 onChange={(e) => updateEventSelection('fizzFest', e.target.checked)}
-                className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+                className="h-4 w-4 text-primary border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200"
               />
             </div>
             <div className="ml-3">
@@ -106,7 +106,7 @@ const EventsForm = () => {
                 id="thanksgiving"
                 checked={formData.selectedEvents.thanksgiving}
                 onChange={(e) => updateEventSelection('thanksgiving', e.target.checked)}
-                className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+                className="h-4 w-4 text-primary border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200"
               />
             </div>
             <div className="ml-3">
@@ -126,13 +126,13 @@ const EventsForm = () => {
           <button
             type="button"
             onClick={prevStep}
-            className="bg-gray-200 text-gray-800 py-3 px-6 rounded-md text-lg font-medium hover:bg-gray-300 transition-colors"
+            className="bg-gray-200 text-gray-800 py-3 px-6 rounded-md text-lg font-medium hover:bg-gray-300 transition-all duration-200 hover:shadow-md"
           >
             Back
           </button>
           <button
             type="submit"
-            className="bg-primary text-white py-3 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-colors"
+            className="bg-primary text-white py-3 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-all duration-200 hover:shadow-md"
           >
             Next: Wine Tastings
           </button>

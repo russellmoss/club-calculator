@@ -1,4 +1,5 @@
 import React from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { useCalculator } from '../../contexts/CalculatorContext';
 import ConsumptionForm from './ConsumptionForm';
 import EventsForm from './EventsForm';
@@ -26,7 +27,18 @@ const CalculatorFlow = () => {
   return (
     <div className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-md mx-auto">
-        {renderStep()}
+        <TransitionGroup>
+          <CSSTransition
+            key={currentStep}
+            timeout={300}
+            classNames="fade"
+            unmountOnExit
+          >
+            <div>
+              {renderStep()}
+            </div>
+          </CSSTransition>
+        </TransitionGroup>
       </div>
     </div>
   );

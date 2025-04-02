@@ -24,7 +24,7 @@ const TastingsForm = () => {
             id="quarterlyTastings"
             checked={formData.useQuarterlyTastings}
             onChange={(e) => updateFormData({ useQuarterlyTastings: e.target.checked })}
-            className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+            className="h-4 w-4 text-primary border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200"
           />
           <label htmlFor="quarterlyTastings" className="ml-2 text-gray-700">
             I will use the free quarterly tastings as a Grand Prix or Triple Crown member
@@ -40,7 +40,7 @@ const TastingsForm = () => {
             min="0"
             value={formData.complimentaryTastings}
             onChange={(e) => updateFormData({ complimentaryTastings: parseInt(e.target.value) || 0 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-gray-400"
             required
           />
           <p className="mt-1 text-sm text-gray-500">
@@ -54,13 +54,13 @@ const TastingsForm = () => {
           <button
             type="button"
             onClick={prevStep}
-            className="bg-gray-200 text-gray-800 py-3 px-6 rounded-md text-lg font-medium hover:bg-gray-300 transition-colors"
+            className="bg-gray-200 text-gray-800 py-3 px-6 rounded-md text-lg font-medium hover:bg-gray-300 transition-all duration-200 hover:shadow-md"
           >
             Back
           </button>
           <button
             type="submit"
-            className="bg-primary text-white py-3 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-colors"
+            className="bg-primary text-white py-3 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-all duration-200 hover:shadow-md"
           >
             View Your Results
           </button>

@@ -3,7 +3,7 @@ import { useCalculator } from '../../contexts/CalculatorContext';
 import SavingsTally from './SavingsTally';
 
 const ConsumptionForm = () => {
-  const { formData, updateFormData, currentStep, nextStep } = useCalculator();
+  const { formData, updateFormData, currentStep, nextStep, prevStep } = useCalculator();
 
   if (currentStep !== 0) return null;
 
@@ -27,7 +27,7 @@ const ConsumptionForm = () => {
             min="0"
             value={formData.monthlyBottles}
             onChange={(e) => updateFormData({ monthlyBottles: parseInt(e.target.value) || 0 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-gray-400"
             required
           />
         </div>
@@ -41,19 +41,26 @@ const ConsumptionForm = () => {
             min="0"
             value={formData.averageBottlePrice}
             onChange={(e) => updateFormData({ averageBottlePrice: parseInt(e.target.value) || 0 })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-gray-400"
             required
           />
         </div>
 
         <SavingsTally />
 
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          <button
+            type="button"
+            onClick={prevStep}
+            className="bg-gray-200 text-gray-800 py-3 px-6 rounded-md text-lg font-medium hover:bg-gray-300 transition-all duration-200 hover:shadow-md"
+          >
+            Back
+          </button>
           <button
             type="submit"
-            className="bg-primary text-white py-3 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-colors"
+            className="bg-primary text-white py-3 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-all duration-200 hover:shadow-md"
           >
-            Next: Events & Activities
+            Next
           </button>
         </div>
       </form>

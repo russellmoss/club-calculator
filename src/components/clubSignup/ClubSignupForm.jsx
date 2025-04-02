@@ -7,12 +7,14 @@ import TermsAndSubmitStep from './TermsAndSubmitStep';
 import FormStepper from './FormStepper';
 import FormSuccess from './FormSuccess';
 import useCommerce7Api from '../../hooks/useCommerce7Api';
+import { useToast } from '../../contexts/ToastContext';
 
 const ClubSignupForm = ({ clubId, onClose }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
+  const { showToast } = useToast();
   
   // Form data state
   const [formData, setFormData] = useState({
@@ -67,6 +69,7 @@ const ClubSignupForm = ({ clubId, onClose }) => {
   // Handle next step
   const handleNext = () => {
     setActiveStep(prevStep => prevStep + 1);
+    showToast('Step completed successfully', 'success');
   };
   
   // Handle back step
@@ -92,10 +95,13 @@ const ClubSignupForm = ({ clubId, onClose }) => {
         clubId
       });
       
+      showToast('Club membership created successfully!', 'success');
       setSuccess(true);
       
     } catch (err) {
-      setError(err.message || 'An error occurred during signup.');
+      const errorMessage = err.message || 'An error occurred during signup.';
+      setError(errorMessage);
+      showToast(errorMessage, 'error');
     } finally {
       setLoading(false);
     }
@@ -167,7 +173,17 @@ const ClubSignupForm = ({ clubId, onClose }) => {
   }
   
   return (
-    <div className="max-w-2xl mx-auto p-6">
+    <div className="relative max-w-2xl mx-auto p-6">
+      {/* Loading Overlay */}
+      {loading && (
+        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50 rounded-lg">
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            <p className="mt-4 text-primary font-medium">Processing your signup...</p>
+          </div>
+        </div>
+      )}
+      
       <FormStepper steps={steps.map(step => step.label)} activeStep={activeStep} />
       {steps[activeStep].component}
     </div>

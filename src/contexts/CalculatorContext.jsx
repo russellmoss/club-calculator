@@ -4,6 +4,7 @@ import { calculateSavings } from '../utils/calculatorUtils';
 const CalculatorContext = createContext();
 
 export const CalculatorProvider = ({ children }) => {
+  // State declarations
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     monthlyBottles: 0,
@@ -28,6 +29,54 @@ export const CalculatorProvider = ({ children }) => {
     jumper: 0
   });
 
+  const [displayedSavings, setDisplayedSavings] = useState({
+    tripleCrown: 0,
+    grandPrix: 0,
+    jumper: 0
+  });
+
+  // Calculate savings whenever form data changes
+  useEffect(() => {
+    const newSavings = calculateSavingsForAllTiers();
+    setSavings(newSavings);
+  }, [formData]);
+
+  // Animate savings display
+  useEffect(() => {
+    // If we're on the first step (Wine Consumption), keep savings at 0
+    if (currentStep === 0) {
+      setDisplayedSavings({
+        tripleCrown: 0,
+        grandPrix: 0,
+        jumper: 0
+      });
+      return;
+    }
+
+    const duration = 1500; // milliseconds
+    const steps = 50;
+    const interval = duration / steps;
+    
+    let step = 0;
+    
+    const timer = setInterval(() => {
+      step++;
+      const progress = step / steps;
+      
+      setDisplayedSavings({
+        tripleCrown: Math.round(progress * savings.tripleCrown),
+        grandPrix: Math.round(progress * savings.grandPrix),
+        jumper: Math.round(progress * savings.jumper)
+      });
+      
+      if (step === steps) {
+        clearInterval(timer);
+      }
+    }, interval);
+    
+    return () => clearInterval(timer);
+  }, [savings, currentStep]);
+
   // Reset calculator state when component mounts
   useEffect(() => {
     resetCalculator();
@@ -41,16 +90,10 @@ export const CalculatorProvider = ({ children }) => {
     }));
   };
 
-  // Calculate savings whenever form data changes
-  useEffect(() => {
-    const newSavings = calculateSavingsForAllTiers();
-    setSavings(newSavings);
-  }, [formData]);
-
   const calculateSavingsForAllTiers = () => {
     // Base savings - wine discounts
-    let tripleCrownTotal = 230; // Base wine savings 
-    let grandPrixTotal = 115;  // Base wine savings
+    let tripleCrownTotal = 260; // Base wine savings 
+    let grandPrixTotal = 150;  // Base wine savings
     let jumperTotal = 76;     // Base wine savings
     
     // Food discounts (Triple Crown only)
@@ -145,6 +188,11 @@ export const CalculatorProvider = ({ children }) => {
       grandPrix: 0,
       jumper: 0
     });
+    setDisplayedSavings({
+      tripleCrown: 0,
+      grandPrix: 0,
+      jumper: 0
+    });
   };
 
   const getRecommendedTier = () => {
@@ -157,7 +205,7 @@ export const CalculatorProvider = ({ children }) => {
   const value = {
     currentStep,
     formData,
-    savings,
+    savings: displayedSavings,
     updateFormData,
     updateEventSelection,
     nextStep,
