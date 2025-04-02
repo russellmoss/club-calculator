@@ -3,8 +3,8 @@ import axios from 'axios';
 
 // Use local development server in development, Netlify Functions in production
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '/.netlify/functions'
-  : 'http://localhost:8888/.netlify/functions';
+  ? '/.netlify/functions/api'
+  : 'http://localhost:8888/.netlify/functions/api';
 
 const useCommerce7Api = () => {
   const [loading, setLoading] = useState(false);
@@ -180,33 +180,27 @@ const useCommerce7Api = () => {
       };
       
       // Log the transformed data for debugging
-      console.log('Sending data to Commerce7:', JSON.stringify(transformedData, null, 2));
+      console.log('Sending data to Commerce7:', transformedData);
       
-      // Call our backend endpoint that handles Commerce7 API calls
-      const response = await axios.post(`${API_BASE_URL}/club-signup`, transformedData);
-      
-      return response.data;
-    } catch (error) {
-      // Log detailed error information
-      console.error('Club signup error details:', {
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        errors: error.response?.data?.errors,
-        requestData: error.config?.data
+      const response = await fetch('/.netlify/functions/api/club-signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(transformedData),
       });
 
-      // Format the error message based on the type of error
-      let errorMessage;
-      if (error.response?.status === 422) {
-        errorMessage = formatCommerce7Errors(error);
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else {
-        errorMessage = error.message || 'Failed to process club signup';
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Club signup error details:', errorData);
+        throw new Error(errorData.error || 'Failed to process club signup');
       }
 
-      throw new Error(errorMessage);
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error in processClubSignup:', error);
+      throw error;
     } finally {
       setLoading(false);
     }

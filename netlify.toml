@@ -6,9 +6,18 @@
 [[plugins]]
   package = "@netlify/plugin-functions-install-core"
 
+[functions]
+  node_bundler = "esbuild"
+  included_files = [".env"]
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/club-signup"
+  to = "/.netlify/functions/api/club-signup"
   status = 200
 
 [[redirects]]
