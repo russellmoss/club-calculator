@@ -8,17 +8,16 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const key = name.replace('shipping', '').toLowerCase();
-    console.log(`Updating shipping ${key}:`, value);
+    console.log(`Updating ${name}:`, value);
     
     // Special handling for state code
-    if (key === 'statecode') {
+    if (name === 'shippingState') {
       // Convert full state name to two-letter code if needed
       const stateCode = value.length > 2 ? stateNameToCode(value) : value.toUpperCase();
       console.log('Converted state code:', stateCode);
-      updateFormData(`shipping${key.charAt(0).toUpperCase() + key.slice(1)}`, stateCode);
+      updateFormData(name, stateCode);
     } else {
-      updateFormData(`shipping${key.charAt(0).toUpperCase() + key.slice(1)}`, value);
+      updateFormData(name, value);
     }
   };
 
