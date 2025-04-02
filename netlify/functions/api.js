@@ -28,6 +28,7 @@ const C7_APP_ID = process.env.C7_APP_ID;
 const C7_SECRET_KEY = process.env.C7_SECRET_KEY;
 const C7_TENANT_ID = process.env.C7_TENANT_ID;
 const PICKUP_LOCATION_ID = process.env.PICKUP_LOCATION_ID;
+const C7_API_URL = 'https://api.commerce7.com/v1';
 
 // Log environment variables for debugging (don't include this in production)
 console.log('=== Environment Variables ===');
@@ -175,39 +176,27 @@ async function addCustomerAddress(customerId, address) {
   }
 }
 
-async function createClubMembership(
-  customerId, 
-  clubId, 
-  billToAddressId, 
-  shipToAddressId, 
-  orderDeliveryMethod
-) {
+async function createClubMembership(customerId, clubId, billToCustomerAddressId, orderDeliveryMethod) {
   try {
     console.log(`Creating club membership for customer: ${customerId}, club: ${clubId}`);
     
-    const payload = {
+    const clubMembershipData = {
       customerId,
       clubId,
-      billToCustomerAddressId: billToAddressId,
+      billToCustomerAddressId,
       signupDate: new Date().toISOString(),
-      orderDeliveryMethod
+      orderDeliveryMethod,
+      pickupInventoryLocationId: process.env.PICKUP_LOCATION_ID,
+      metaData: {
+        "club-calculator-sign-up": "true"
+      }
     };
+
+    console.log('Club membership payload:', JSON.stringify(clubMembershipData, null, 2));
     
-    if (orderDeliveryMethod === 'Pickup') {
-      payload.pickupInventoryLocationId = PICKUP_LOCATION_ID;
-    } else {
-      payload.shipToCustomerAddressId = shipToAddressId;
-    }
+    const response = await axios.post(`${C7_API_URL}/club-membership`, clubMembershipData, authConfig);
     
-    console.log('Club membership payload:', JSON.stringify(payload, null, 2));
-    
-    const response = await axios.post(
-      'https://api.commerce7.com/v1/club-membership',
-      payload,
-      authConfig
-    );
-    
-    console.log('Club membership created successfully!', `ID: ${response.data.id}`);
+    console.log('Club membership created successfully! ID:', response.data.id);
     return response.data;
   } catch (error) {
     console.error('Error creating club membership:', error.response?.data || error.message);
@@ -268,7 +257,6 @@ app.post('/api/club-signup', async (req, res) => {
       customer.id,
       clubId,
       billingAddressResult.id,
-      shippingAddressResult ? shippingAddressResult.id : null,
       orderDeliveryMethod
     );
     
