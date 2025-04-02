@@ -8,16 +8,11 @@
 
 [functions]
   node_bundler = "esbuild"
-  included_files = [".env"]
+  included_files = ["netlify/functions/.env"]
 
 [[redirects]]
-  from = "/api/*"
+  from = "/.netlify/functions/api/*"
   to = "/.netlify/functions/api/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/club-signup"
-  to = "/.netlify/functions/api/club-signup"
   status = 200
 
 [[redirects]]

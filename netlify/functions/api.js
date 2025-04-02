@@ -10,11 +10,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Commerce7 API configuration - updated to match injected environment variables
-const C7_APP_ID = process.env.REACT_APP_C7_APP_ID;
-const C7_SECRET_KEY = process.env.REACT_APP_C7_SECRET_KEY;
-const C7_TENANT_ID = process.env.REACT_APP_C7_TENANT_ID;
-const PICKUP_LOCATION_ID = process.env.REACT_APP_PICKUP_LOCATION_ID;
+// Commerce7 API configuration - updated to match Netlify environment variables
+const C7_APP_ID = process.env.C7_APP_ID;
+const C7_SECRET_KEY = process.env.C7_SECRET_KEY;
+const C7_TENANT_ID = process.env.C7_TENANT_ID;
+const PICKUP_LOCATION_ID = process.env.PICKUP_LOCATION_ID;
 
 // Log environment variables for debugging (don't include this in production)
 console.log('Environment variables:');
@@ -257,5 +257,5 @@ app.post('/club-signup', async (req, res) => {
   }
 });
 
-// Export handler for serverless function
+// Export the serverless handler
 module.exports.handler = serverless(app); 
