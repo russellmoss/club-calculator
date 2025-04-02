@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { calculateSavings } from '../utils/calculatorUtils';
 
 const CalculatorContext = createContext();
@@ -23,7 +23,11 @@ export const CalculatorProvider = ({ children }) => {
     complimentaryTastings: 0
   });
   
-  const [savings, setSavings] = useState({});
+  const [savings, setSavings] = useState({
+    tripleCrown: 0,
+    grandPrix: 0,
+    jumper: 0
+  });
 
   const [displayedSavings, setDisplayedSavings] = useState({
     tripleCrown: 0,
@@ -32,6 +36,59 @@ export const CalculatorProvider = ({ children }) => {
   });
 
   const [selectedTier, setSelectedTier] = useState(null);
+
+  const calculateSavingsForAllTiers = useCallback(() => {
+    // Base savings - wine discounts
+    let tripleCrownTotal = 260; // Base wine savings 
+    let grandPrixTotal = 150;  // Base wine savings
+    let jumperTotal = 76;     // Base wine savings
+    
+    // Food discounts (Triple Crown only)
+    tripleCrownTotal += 30;
+    
+    // Calculate event savings
+    if (formData.selectedEvents.culinarySeries) {
+      tripleCrownTotal += 35;
+      grandPrixTotal += 35;
+      jumperTotal += 35;
+    }
+    
+    if (formData.selectedEvents.pickupParties) {
+      tripleCrownTotal += 35;
+      grandPrixTotal += 35;
+      jumperTotal += 35;
+    }
+    
+    if (formData.selectedEvents.roseDay) {
+      tripleCrownTotal += 35;
+      grandPrixTotal += 35;
+      jumperTotal += 35;
+    }
+    
+    if (formData.selectedEvents.fizzFest) {
+      tripleCrownTotal += 35;
+      grandPrixTotal += 35;
+      jumperTotal += 35;
+    }
+    
+    if (formData.selectedEvents.thanksgiving) {
+      tripleCrownTotal += 35;
+      grandPrixTotal += 35;
+      jumperTotal += 35;
+    }
+    
+    // Calculate complimentary tastings savings
+    const complimentarySavings = formData.complimentaryTastings * 25;
+    tripleCrownTotal += complimentarySavings;
+    grandPrixTotal += complimentarySavings;
+    jumperTotal += complimentarySavings;
+    
+    setSavings({
+      tripleCrown: tripleCrownTotal,
+      grandPrix: grandPrixTotal,
+      jumper: jumperTotal
+    });
+  }, [formData]);
 
   // Calculate savings whenever form data changes
   useEffect(() => {
@@ -87,67 +144,6 @@ export const CalculatorProvider = ({ children }) => {
     }));
   };
 
-  const calculateSavingsForAllTiers = () => {
-    // Base savings - wine discounts
-    let tripleCrownTotal = 260; // Base wine savings 
-    let grandPrixTotal = 150;  // Base wine savings
-    let jumperTotal = 76;     // Base wine savings
-    
-    // Food discounts (Triple Crown only)
-    tripleCrownTotal += 30;
-    
-    // Calculate event savings
-    if (formData.selectedEvents.culinarySeries) {
-      // $25 off each dinner, assuming at least two per year
-      tripleCrownTotal += 50;
-      grandPrixTotal += 50;
-      jumperTotal += 50;
-    }
-    
-    if (formData.selectedEvents.pickupParties) {
-      // Two free tickets at $35 each for 4 parties
-      const pickupSavings = 2 * 35 * 4;
-      tripleCrownTotal += pickupSavings;
-      grandPrixTotal += pickupSavings;
-      jumperTotal += pickupSavings;
-    }
-    
-    // Individual events
-    const eventSavings = (event) => formData.selectedEvents[event] ? 2 * 35 : 0;
-    
-    tripleCrownTotal += eventSavings('roseDay');
-    tripleCrownTotal += eventSavings('fizzFest');
-    tripleCrownTotal += eventSavings('thanksgiving');
-    
-    grandPrixTotal += eventSavings('roseDay');
-    grandPrixTotal += eventSavings('fizzFest');
-    grandPrixTotal += eventSavings('thanksgiving');
-    
-    jumperTotal += eventSavings('roseDay');
-    jumperTotal += eventSavings('fizzFest');
-    jumperTotal += eventSavings('thanksgiving');
-    
-    // Quarterly tastings (Triple Crown and Grand Prix only)
-    if (formData.useQuarterlyTastings) {
-      const quarterlySavings = 100 * 4; // $100 per quarter × 4
-      tripleCrownTotal += quarterlySavings;
-      grandPrixTotal += quarterlySavings;
-      // Jumper doesn't get quarterly tastings
-    }
-    
-    // Complimentary tastings
-    const complimentarySavings = formData.complimentaryTastings * 25;
-    tripleCrownTotal += complimentarySavings;
-    grandPrixTotal += complimentarySavings;
-    jumperTotal += complimentarySavings;
-    
-    setSavings({
-      tripleCrown: tripleCrownTotal,
-      grandPrix: grandPrixTotal,
-      jumper: jumperTotal
-    });
-  };
-
   const updateEventSelection = (eventName, isSelected) => {
     setFormData(prevState => ({
       ...prevState,
@@ -180,7 +176,11 @@ export const CalculatorProvider = ({ children }) => {
       useQuarterlyTastings: false,
       complimentaryTastings: 0
     });
-    setSavings({});
+    setSavings({
+      tripleCrown: 0,
+      grandPrix: 0,
+      jumper: 0
+    });
     setDisplayedSavings({
       tripleCrown: 0,
       grandPrix: 0,
