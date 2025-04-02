@@ -165,7 +165,7 @@ const useCommerce7Api = () => {
           zipCode: formData.billingAddress.zipCode,
           countryCode: formData.billingAddress.countryCode || 'US'
         },
-        shippingAddress: formData.shippingAddress ? {
+        shippingAddress: formData.sameAsBilling ? null : formData.shippingAddress ? {
           firstName: formData.shippingAddress.firstName,
           lastName: formData.shippingAddress.lastName,
           address: formData.shippingAddress.address,
@@ -177,6 +177,7 @@ const useCommerce7Api = () => {
         } : null,
         clubId: formData.clubId,
         orderDeliveryMethod: formData.orderDeliveryMethod,
+        sameAsBilling: formData.sameAsBilling,
         metaData: formData.metaData || {
           'club-calculator-sign-up': 'true'
         }

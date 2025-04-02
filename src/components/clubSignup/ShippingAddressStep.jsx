@@ -16,16 +16,18 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
   const handleUseBillingAddress = (e) => {
     const useBilling = e.target.checked;
     updateFormData({
-      useShippingAsBilling: useBilling,
-      shippingAddress: useBilling ? { ...formData.billingAddress } : {
-        address: '',
-        address2: '',
-        city: '',
-        stateCode: '',
-        zipCode: '',
-        countryCode: 'US',
-        isDefault: true
-      }
+      sameAsBilling: useBilling,
+      // Clear shipping address fields if using billing address
+      ...(useBilling ? {
+        shippingFirstName: '',
+        shippingLastName: '',
+        shippingAddress: '',
+        shippingAddress2: '',
+        shippingCity: '',
+        shippingState: '',
+        shippingZip: '',
+        shippingCountry: 'US'
+      } : {})
     });
   };
 
@@ -35,7 +37,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
         <input
           type="checkbox"
           id="useBillingAddress"
-          checked={formData.useShippingAsBilling}
+          checked={formData.sameAsBilling}
           onChange={handleUseBillingAddress}
           className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
         />
@@ -44,7 +46,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
         </label>
       </div>
 
-      {!formData.useShippingAsBilling && (
+      {!formData.sameAsBilling && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <label htmlFor="shippingFirstName" className="block text-base font-medium text-gray-900 mb-2">

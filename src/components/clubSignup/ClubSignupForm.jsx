@@ -103,8 +103,6 @@ const ClubSignupForm = ({ clubId, onClose }) => {
         shippingAddress: formData.sameAsBilling ? null : {
           firstName: formData.shippingFirstName,
           lastName: formData.shippingLastName,
-          email: formData.email,
-          phone: formData.phone,
           address: formData.shippingAddress,
           address2: formData.shippingAddress2 || '',
           city: formData.shippingCity,
@@ -114,7 +112,7 @@ const ClubSignupForm = ({ clubId, onClose }) => {
         },
         clubId: formData.clubId,
         orderDeliveryMethod: formData.orderDeliveryMethod,
-        useShippingAsBilling: formData.sameAsBilling,
+        sameAsBilling: formData.sameAsBilling,
         metaData: {
           'club-calculator-sign-up': 'true'
         }
