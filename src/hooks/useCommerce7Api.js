@@ -4,7 +4,7 @@ import axios from 'axios';
 // Use local development server in development, Netlify Functions in production
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
   ? '/.netlify/functions'
-  : 'http://localhost:5000';
+  : 'http://localhost:8888/.netlify/functions';
 
 const useCommerce7Api = () => {
   const [loading, setLoading] = useState(false);
@@ -107,7 +107,7 @@ const useCommerce7Api = () => {
       console.log('Testing with data:', JSON.stringify(transformedData, null, 2));
       
       // Call our backend endpoint
-      const response = await axios.post(`${API_BASE_URL}/api/club-signup`, transformedData);
+      const response = await axios.post(`${API_BASE_URL}/club-signup`, transformedData);
       
       console.log('Test successful:', response.data);
       return response.data;
@@ -183,7 +183,7 @@ const useCommerce7Api = () => {
       console.log('Sending data to Commerce7:', JSON.stringify(transformedData, null, 2));
       
       // Call our backend endpoint that handles Commerce7 API calls
-      const response = await axios.post(`${API_BASE_URL}/api/club-signup`, transformedData);
+      const response = await axios.post(`${API_BASE_URL}/club-signup`, transformedData);
       
       return response.data;
     } catch (error) {
