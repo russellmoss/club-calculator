@@ -144,53 +144,72 @@ async function updateCustomer(customerId, customerData) {
   }
 }
 
-async function addCustomerAddress(customerId, address) {
+// Add a new address to a customer
+async function addCustomerAddress(customerId, addressData, isBillingAddress = false) {
   try {
-    console.log(`Adding billing address for customer: ${customerId}`);
+    console.log(`Adding ${isBillingAddress ? 'billing' : 'shipping'} address for customer: ${customerId}`);
     
     // Get customer details to include in address
-    const customerResponse = await axios.get(`https://api.commerce7.com/v1/customer/${customerId}`, authConfig);
+    const customerResponse = await axios.get(`${C7_API_URL}/customer/${customerId}`, authConfig);
     const customer = customerResponse.data;
-
+    
     // Prepare address data with required fields
-    const addressData = {
+    const addressPayload = {
       firstName: customer.firstName,
       lastName: customer.lastName,
-      address: address.address,
-      city: address.city,
-      stateCode: address.stateCode,
-      zipCode: address.zipCode,
-      countryCode: 'US', // Required by Commerce7 API
-      isDefault: true
+      address: addressData.address,
+      city: addressData.city,
+      stateCode: addressData.stateCode,
+      zipCode: addressData.zipCode,
+      countryCode: "US",
+      isDefault: isBillingAddress // Only set as default for billing addresses
     };
 
-    console.log('Address data:', JSON.stringify(addressData, null, 2));
+    console.log('Address data:', JSON.stringify(addressPayload, null, 2));
     
-    const response = await axios.post(`https://api.commerce7.com/v1/customer/${customerId}/address`, addressData, authConfig);
+    const response = await axios.post(
+      `${C7_API_URL}/customer/${customerId}/address`,
+      addressPayload,
+      authConfig
+    );
     
-    console.log('billing address added successfully! ID:', response.data.id);
+    console.log(`${isBillingAddress ? 'Billing' : 'Shipping'} address added successfully! ID: ${response.data.id}`);
     return response.data;
   } catch (error) {
-    console.error('Error adding billing address:', error.response?.data || error.message);
+    console.error(`Error adding ${isBillingAddress ? 'billing' : 'shipping'} address:`, error.response?.data || error.message);
     throw error;
   }
 }
 
-async function createClubMembership(customerId, clubId, billToCustomerAddressId, orderDeliveryMethod) {
+async function createClubMembership(customerId, clubId, billToCustomerAddressId, orderDeliveryMethod, shippingAddress = null) {
   try {
     console.log(`Creating club membership for customer: ${customerId}, club: ${clubId}`);
+    
+    // Convert "Ship to address" to "Ship" for Commerce7 API
+    const deliveryMethod = orderDeliveryMethod === "Ship to address" ? "Ship" : orderDeliveryMethod;
     
     const clubMembershipData = {
       customerId,
       clubId,
       billToCustomerAddressId,
       signupDate: new Date().toISOString(),
-      orderDeliveryMethod,
-      pickupInventoryLocationId: process.env.PICKUP_LOCATION_ID,
+      orderDeliveryMethod: deliveryMethod,
       metaData: {
         "club-calculator-sign-up": "true"
       }
     };
+
+    // Add shipping address if delivery method is "Ship"
+    if (deliveryMethod === "Ship") {
+      // If shipping address is null or sameAsBilling is true, use billing address
+      if (!shippingAddress || shippingAddress.sameAsBilling) {
+        clubMembershipData.shipToCustomerAddressId = billToCustomerAddressId;
+      } else if (shippingAddress.id) {
+        clubMembershipData.shipToCustomerAddressId = shippingAddress.id;
+      }
+    } else if (deliveryMethod === "Pickup") {
+      clubMembershipData.pickupInventoryLocationId = process.env.PICKUP_LOCATION_ID;
+    }
 
     console.log('Club membership payload:', JSON.stringify(clubMembershipData, null, 2));
     
@@ -205,20 +224,13 @@ async function createClubMembership(customerId, clubId, billToCustomerAddressId,
 }
 
 // Club signup endpoint
-app.post('/api/club-signup', async (req, res) => {
+app.post('/.netlify/functions/api/club-signup', async (req, res) => {
   try {
-    console.log('=== Starting Club Signup Process ===');
+    console.log('Starting Wine Club Signup Process...');
     console.log('Request body:', JSON.stringify(req.body, null, 2));
     
-    const {
-      customerInfo,
-      billingAddress,
-      shippingAddress,
-      clubId,
-      orderDeliveryMethod,
-      metadata
-    } = req.body;
-
+    const { customerInfo, billingAddress, shippingAddress, clubId, orderDeliveryMethod } = req.body;
+    
     // Validate required fields
     if (!customerInfo?.email) {
       return res.status(400).json({
@@ -227,72 +239,53 @@ app.post('/api/club-signup', async (req, res) => {
       });
     }
 
-    // Step 1: Check if customer exists
+    // Find or create customer
     let customer = await findCustomerByEmail(customerInfo.email);
-    
-    // Step 2: Create or update customer
     if (!customer) {
       customer = await createCustomer(customerInfo);
     } else {
       customer = await updateCustomer(customer.id, customerInfo);
     }
     
-    // Step 3: Add billing address
-    const billingAddressResult = await addCustomerAddress(
-      customer.id, 
-      billingAddress
-    );
+    // Add billing address (set as default)
+    const billingAddressResult = await addCustomerAddress(customer.id, billingAddress, true);
     
-    // Step 4: Add shipping address (only if delivery method is "Ship")
+    // Add shipping address if provided and different from billing
     let shippingAddressResult = null;
-    if (orderDeliveryMethod === 'Ship' && shippingAddress) {
-      shippingAddressResult = await addCustomerAddress(
-        customer.id,
-        shippingAddress
-      );
+    if (orderDeliveryMethod === "Ship to address" && shippingAddress && !shippingAddress.sameAsBilling) {
+      shippingAddressResult = await addCustomerAddress(customer.id, shippingAddress, false);
     }
     
-    // Step 5: Create club membership
+    // Create club membership with appropriate address
     const clubMembership = await createClubMembership(
       customer.id,
       clubId,
       billingAddressResult.id,
-      orderDeliveryMethod
+      orderDeliveryMethod,
+      shippingAddressResult
     );
+    
+    // Get full customer and club membership data
+    const fullCustomer = await axios.get(`${C7_API_URL}/customer/${customer.id}`, authConfig);
+    const fullClubMembership = await axios.get(`${C7_API_URL}/club-membership/${clubMembership.id}`, authConfig);
     
     console.log('Club signup process completed successfully!');
     console.log('Summary:');
-    console.log(`Customer: ${customer.firstName} ${customer.lastName} (${customer.id})`);
-    console.log(`Club Membership: ${clubMembership.id}`);
-    console.log(`Club Tier: ${clubId}`);
-    console.log(`Delivery Method: ${orderDeliveryMethod}`);
-    
-    // Get full customer and club membership data
-    const [customerData, membershipData] = await Promise.all([
-      axios.get(`https://api.commerce7.com/v1/customer/${customer.id}`, authConfig),
-      axios.get(`https://api.commerce7.com/v1/club-membership/${clubMembership.id}`, authConfig)
-    ]);
-    
-    // Log the response data for debugging
-    console.log('Response data:', {
-      customer: customerData.data,
-      clubMembership: membershipData.data
-    });
+    console.log(`Customer: ${fullCustomer.data.firstName} ${fullCustomer.data.lastName} (${fullCustomer.data.id})`);
+    console.log(`Club Membership: ${fullClubMembership.data.id}`);
+    console.log(`Club Tier: ${fullClubMembership.data.clubId}`);
+    console.log(`Delivery Method: ${fullClubMembership.data.orderDeliveryMethod}`);
     
     res.json({
       success: true,
-      data: {
-        customer: customerData.data,
-        clubMembership: membershipData.data,
-        deliveryMethod: orderDeliveryMethod
-      }
+      customer: fullCustomer.data,
+      clubMembership: fullClubMembership.data
     });
-    
   } catch (error) {
     console.error('Error in club signup process:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to process club signup'
+      error: error.response?.data || error.message
     });
   }
 });
