@@ -63,10 +63,10 @@ const transformClubSignupData = (data) => {
   // Transform the data to match the API's expected structure
   const transformedData = {
     // Customer info at root level
-    email: data.email,
-    firstName: data.firstName,
-    lastName: data.lastName,
-    phone: data.phone,
+    email: data.billingAddress.email || data.email,
+    firstName: data.billingAddress.firstName,
+    lastName: data.billingAddress.lastName,
+    phone: data.billingAddress.phone,
     clubId: data.clubId,
     orderDeliveryMethod: data.orderDeliveryMethod || 'Pickup',
 
