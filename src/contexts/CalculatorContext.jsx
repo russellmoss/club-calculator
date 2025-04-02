@@ -23,11 +23,7 @@ export const CalculatorProvider = ({ children }) => {
     complimentaryTastings: 0
   });
   
-  const [savings, setSavings] = useState({
-    tripleCrown: 0,
-    grandPrix: 0,
-    jumper: 0
-  });
+  const [savings, setSavings] = useState({});
 
   const [displayedSavings, setDisplayedSavings] = useState({
     tripleCrown: 0,
@@ -35,11 +31,12 @@ export const CalculatorProvider = ({ children }) => {
     jumper: 0
   });
 
+  const [selectedTier, setSelectedTier] = useState(null);
+
   // Calculate savings whenever form data changes
   useEffect(() => {
-    const newSavings = calculateSavingsForAllTiers();
-    setSavings(newSavings);
-  }, [formData]);
+    calculateSavingsForAllTiers();
+  }, [calculateSavingsForAllTiers]);
 
   // Animate savings display
   useEffect(() => {
@@ -144,11 +141,11 @@ export const CalculatorProvider = ({ children }) => {
     grandPrixTotal += complimentarySavings;
     jumperTotal += complimentarySavings;
     
-    return {
+    setSavings({
       tripleCrown: tripleCrownTotal,
       grandPrix: grandPrixTotal,
       jumper: jumperTotal
-    };
+    });
   };
 
   const updateEventSelection = (eventName, isSelected) => {
@@ -183,11 +180,7 @@ export const CalculatorProvider = ({ children }) => {
       useQuarterlyTastings: false,
       complimentaryTastings: 0
     });
-    setSavings({
-      tripleCrown: 0,
-      grandPrix: 0,
-      jumper: 0
-    });
+    setSavings({});
     setDisplayedSavings({
       tripleCrown: 0,
       grandPrix: 0,
