@@ -227,18 +227,16 @@ async function createClubMembership(customerId, clubId, billToCustomerAddressId,
 app.post('/club-signup', async (req, res) => {
   try {
     console.log('Starting Wine Club Signup Process...');
-    console.log('Request body:', JSON.stringify(req.body, null, 2));
-    
-    const { customerInfo, billingAddress, shippingAddress, clubId, orderDeliveryMethod } = req.body;
-    
+    console.log('Request body:', req.body);
+
     // Validate required fields
-    if (!customerInfo?.email) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required customer email'
-      });
+    if (!req.body.customerInfo || !req.body.customerInfo.email) {
+      console.error('Missing required fields:', req.body);
+      return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    const { customerInfo, billingAddress, shippingAddress, clubId, orderDeliveryMethod } = req.body;
+    
     // Find or create customer
     let customer = await findCustomerByEmail(customerInfo.email);
     if (!customer) {
