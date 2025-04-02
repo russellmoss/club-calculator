@@ -224,7 +224,7 @@ async function createClubMembership(customerId, clubId, billToCustomerAddressId,
 }
 
 // Club signup endpoint
-app.post('/.netlify/functions/api/club-signup', async (req, res) => {
+app.post('/club-signup', async (req, res) => {
   try {
     console.log('Starting Wine Club Signup Process...');
     console.log('Request body:', JSON.stringify(req.body, null, 2));
