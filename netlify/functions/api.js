@@ -141,7 +141,7 @@ async function createClubMembership(
 }
 
 // Club signup endpoint
-app.post('/api/club-signup', async (req, res) => {
+app.post('/club-signup', async (req, res) => {
   try {
     const {
       email,
