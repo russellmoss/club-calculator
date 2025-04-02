@@ -29,31 +29,26 @@ const ClubSignupForm = ({ clubId, onClose }) => {
     birthDate: '',
     
     // Billing address
-    billingAddress: {
-      address: '',
-      address2: '',
-      city: '',
-      stateCode: '',
-      zipCode: '',
-      countryCode: 'US',
-      isDefault: true
-    },
+    billingAddress: '',
+    billingAddress2: '',
+    billingCity: '',
+    billingState: '',
+    billingZip: '',
+    billingCountry: 'US',
     
     // Shipping address
-    shippingAddress: {
-      address: '',
-      address2: '',
-      city: '',
-      stateCode: '',
-      zipCode: '',
-      countryCode: 'US',
-      isDefault: true
-    },
+    shippingFirstName: '',
+    shippingLastName: '',
+    shippingAddress: '',
+    shippingAddress2: '',
+    shippingCity: '',
+    shippingState: '',
+    shippingZip: '',
+    shippingCountry: 'US',
     
-    // Options
-    useShippingAsBilling: false,
-    orderDeliveryMethod: 'Ship', // 'Ship' or 'Pickup'
-    termsAccepted: false
+    // Delivery method
+    orderDeliveryMethod: 'Pickup',
+    sameAsBilling: true
   });
   
   const { processClubSignup } = useCommerce7Api();
@@ -99,27 +94,27 @@ const ClubSignupForm = ({ clubId, onClose }) => {
           firstName: formData.firstName,
           lastName: formData.lastName,
           address: formData.billingAddress,
-          address2: formData.billingAddress.address2 || '',
-          city: formData.billingAddress.city,
-          stateCode: formData.billingAddress.stateCode,
-          zipCode: formData.billingAddress.zipCode,
-          countryCode: formData.billingAddress.countryCode || 'US'
+          address2: formData.billingAddress2 || '',
+          city: formData.billingCity,
+          stateCode: formData.billingState,
+          zipCode: formData.billingZip,
+          countryCode: formData.billingCountry || 'US'
         },
-        shippingAddress: formData.useShippingAsBilling ? null : {
-          firstName: formData.shippingAddress.firstName,
-          lastName: formData.shippingAddress.lastName,
+        shippingAddress: formData.sameAsBilling ? null : {
+          firstName: formData.shippingFirstName,
+          lastName: formData.shippingLastName,
           email: formData.email,
           phone: formData.phone,
-          address: formData.shippingAddress.address,
-          address2: formData.shippingAddress.address2 || '',
-          city: formData.shippingAddress.city,
-          stateCode: formData.shippingAddress.stateCode,
-          zipCode: formData.shippingAddress.zipCode,
-          countryCode: formData.shippingAddress.countryCode || 'US'
+          address: formData.shippingAddress,
+          address2: formData.shippingAddress2 || '',
+          city: formData.shippingCity,
+          stateCode: formData.shippingState,
+          zipCode: formData.shippingZip,
+          countryCode: formData.shippingCountry || 'US'
         },
         clubId: formData.clubId,
         orderDeliveryMethod: formData.orderDeliveryMethod,
-        useShippingAsBilling: formData.useShippingAsBilling,
+        useShippingAsBilling: formData.sameAsBilling,
         metaData: {
           'club-calculator-sign-up': 'true'
         }

@@ -9,10 +9,7 @@ const BillingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     updateFormData({
-      billingAddress: {
-        ...formData.billingAddress,
-        [name]: value
-      }
+      [`billing${name.charAt(0).toUpperCase() + name.slice(1)}`]: value
     });
   };
 
@@ -27,7 +24,7 @@ const BillingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             type="text"
             id="billingAddress"
             name="address"
-            value={formData.billingAddress.address}
+            value={formData.billingAddress}
             onChange={handleChange}
             required
             className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
@@ -43,7 +40,7 @@ const BillingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             type="text"
             id="billingAddress2"
             name="address2"
-            value={formData.billingAddress.address2}
+            value={formData.billingAddress2}
             onChange={handleChange}
             className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
             placeholder="Enter apartment or suite number"
@@ -58,11 +55,11 @@ const BillingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             type="text"
             id="billingCity"
             name="city"
-            value={formData.billingAddress.city}
+            value={formData.billingCity}
             onChange={handleChange}
             required
             className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
-            placeholder="Enter your city"
+            placeholder="Enter city"
           />
         </div>
 
@@ -73,12 +70,12 @@ const BillingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
           <input
             type="text"
             id="billingState"
-            name="stateCode"
-            value={formData.billingAddress.stateCode}
+            name="state"
+            value={formData.billingState}
             onChange={handleChange}
             required
             className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
-            placeholder="Enter your state"
+            placeholder="Enter state"
           />
         </div>
 
@@ -89,12 +86,28 @@ const BillingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
           <input
             type="text"
             id="billingZip"
-            name="zipCode"
-            value={formData.billingAddress.zipCode}
+            name="zip"
+            value={formData.billingZip}
             onChange={handleChange}
             required
             className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
-            placeholder="Enter your ZIP code"
+            placeholder="Enter ZIP code"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="billingCountry" className="block text-base font-medium text-gray-900 mb-2">
+            Country
+          </label>
+          <input
+            type="text"
+            id="billingCountry"
+            name="country"
+            value={formData.billingCountry}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+            placeholder="Enter country"
           />
         </div>
       </div>

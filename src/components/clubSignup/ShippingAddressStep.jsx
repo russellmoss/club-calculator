@@ -9,10 +9,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     updateFormData({
-      shippingAddress: {
-        ...formData.shippingAddress,
-        [name]: value
-      }
+      [`shipping${name.charAt(0).toUpperCase() + name.slice(1)}`]: value
     });
   };
 
@@ -49,6 +46,38 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
 
       {!formData.useShippingAsBilling && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <label htmlFor="shippingFirstName" className="block text-base font-medium text-gray-900 mb-2">
+              First Name
+            </label>
+            <input
+              type="text"
+              id="shippingFirstName"
+              name="firstName"
+              value={formData.shippingFirstName}
+              onChange={handleChange}
+              required
+              className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+              placeholder="Enter first name"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="shippingLastName" className="block text-base font-medium text-gray-900 mb-2">
+              Last Name
+            </label>
+            <input
+              type="text"
+              id="shippingLastName"
+              name="lastName"
+              value={formData.shippingLastName}
+              onChange={handleChange}
+              required
+              className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+              placeholder="Enter last name"
+            />
+          </div>
+
           <div className="md:col-span-2">
             <label htmlFor="shippingAddress" className="block text-base font-medium text-gray-900 mb-2">
               Street Address
@@ -57,11 +86,11 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
               type="text"
               id="shippingAddress"
               name="address"
-              value={formData.shippingAddress.address}
+              value={formData.shippingAddress}
               onChange={handleChange}
               required
               className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
-              placeholder="Enter your street address"
+              placeholder="Enter street address"
             />
           </div>
 
@@ -73,7 +102,7 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
               type="text"
               id="shippingAddress2"
               name="address2"
-              value={formData.shippingAddress.address2}
+              value={formData.shippingAddress2}
               onChange={handleChange}
               className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
               placeholder="Enter apartment or suite number"
@@ -88,11 +117,11 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
               type="text"
               id="shippingCity"
               name="city"
-              value={formData.shippingAddress.city}
+              value={formData.shippingCity}
               onChange={handleChange}
               required
               className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
-              placeholder="Enter your city"
+              placeholder="Enter city"
             />
           </div>
 
@@ -103,12 +132,12 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             <input
               type="text"
               id="shippingState"
-              name="stateCode"
-              value={formData.shippingAddress.stateCode}
+              name="state"
+              value={formData.shippingState}
               onChange={handleChange}
               required
               className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
-              placeholder="Enter your state"
+              placeholder="Enter state"
             />
           </div>
 
@@ -119,12 +148,28 @@ const ShippingAddressStep = ({ formData, updateFormData, onBack, onNext }) => {
             <input
               type="text"
               id="shippingZip"
-              name="zipCode"
-              value={formData.shippingAddress.zipCode}
+              name="zip"
+              value={formData.shippingZip}
               onChange={handleChange}
               required
               className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
-              placeholder="Enter your ZIP code"
+              placeholder="Enter ZIP code"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="shippingCountry" className="block text-base font-medium text-gray-900 mb-2">
+              Country
+            </label>
+            <input
+              type="text"
+              id="shippingCountry"
+              name="country"
+              value={formData.shippingCountry}
+              onChange={handleChange}
+              required
+              className="mt-1 block w-full px-4 py-3 text-base border-2 border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-colors"
+              placeholder="Enter country"
             />
           </div>
         </div>
