@@ -33,6 +33,19 @@ const TastingsForm = () => {
       <p className="text-gray-600 mb-8">Let's calculate your savings from complimentary wine tastings.</p>
       
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="quarterlyTastings"
+            checked={formData.useQuarterlyTastings}
+            onChange={(e) => updateFormData({ useQuarterlyTastings: e.target.checked })}
+            className="h-4 w-4 text-primary border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200"
+          />
+          <label htmlFor="quarterlyTastings" className="ml-2 text-gray-700">
+            I will use the free quarterly tastings as a Grand Prix or Triple Crown member
+          </label>
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             How many complimentary tastings would you like per year?
@@ -47,6 +60,9 @@ const TastingsForm = () => {
             className="w-full px-3 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-gray-400"
             required
           />
+          <p className="mt-1 text-sm text-gray-500">
+            Each tasting is valued at $25
+          </p>
         </div>
 
         <SavingsTally />
