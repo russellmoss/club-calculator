@@ -7,7 +7,7 @@ const useIdleTimer = (onIdle, idleTime = 180000) => {
   const [isIdle, setIsIdle] = useState(false);
 
   const reset = () => {
-    console.log('Resetting idle timer...');
+    console.log('Resetting idle timer...', new Date().toISOString());
     setIsIdle(false);
     setTimeLeft(0);
 
@@ -20,7 +20,7 @@ const useIdleTimer = (onIdle, idleTime = 180000) => {
 
     // Start countdown after 30 seconds of inactivity
     idleTimeoutRef.current = setTimeout(() => {
-      console.log('Starting countdown...');
+      console.log('Starting countdown...', new Date().toISOString());
       setIsIdle(true);
       setTimeLeft(150); // 2:30 in seconds
       
@@ -28,7 +28,7 @@ const useIdleTimer = (onIdle, idleTime = 180000) => {
       countdownIntervalRef.current = setInterval(() => {
         setTimeLeft(prev => {
           if (prev <= 1) {
-            console.log('Countdown finished, calling onIdle...');
+            console.log('Countdown finished, calling onIdle...', new Date().toISOString());
             clearInterval(countdownIntervalRef.current);
             onIdle();
             return 0;
@@ -40,7 +40,7 @@ const useIdleTimer = (onIdle, idleTime = 180000) => {
   };
 
   useEffect(() => {
-    console.log('Setting up idle timer...');
+    console.log('Setting up idle timer...', new Date().toISOString());
     const events = [
       'mousedown',
       'mousemove',
@@ -54,22 +54,25 @@ const useIdleTimer = (onIdle, idleTime = 180000) => {
       'blur'
     ];
 
-    const eventHandler = () => {
-      console.log('User activity detected, resetting timer...');
+    const eventHandler = (event) => {
+      console.log('User activity detected:', event.type, new Date().toISOString());
       reset();
     };
 
+    // Add event listeners with capture phase
     events.forEach(event => {
-      document.addEventListener(event, eventHandler, true);
+      document.addEventListener(event, eventHandler, { capture: true });
+      console.log(`Added event listener for ${event}`);
     });
 
     // Initial setup
     reset();
 
     return () => {
-      console.log('Cleaning up idle timer...');
+      console.log('Cleaning up idle timer...', new Date().toISOString());
       events.forEach(event => {
-        document.removeEventListener(event, eventHandler, true);
+        document.removeEventListener(event, eventHandler, { capture: true });
+        console.log(`Removed event listener for ${event}`);
       });
       if (idleTimeoutRef.current) {
         clearTimeout(idleTimeoutRef.current);

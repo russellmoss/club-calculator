@@ -4,9 +4,12 @@ const IdleTimerDisplay = ({ timeLeft, onReset }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    console.log('IdleTimerDisplay: timeLeft changed to', timeLeft);
     if (timeLeft > 0) {
+      console.log('IdleTimerDisplay: Showing timer');
       setIsVisible(true);
     } else {
+      console.log('IdleTimerDisplay: Hiding timer');
       setIsVisible(false);
     }
   }, [timeLeft]);
@@ -25,7 +28,10 @@ const IdleTimerDisplay = ({ timeLeft, onReset }) => {
           <p className="text-xl font-bold text-primary">{formattedTime}</p>
         </div>
         <button
-          onClick={onReset}
+          onClick={() => {
+            console.log('IdleTimerDisplay: Stay Active button clicked');
+            onReset();
+          }}
           className="px-3 py-1 text-sm bg-primary text-white rounded hover:bg-darkBrownHover transition-colors"
         >
           Stay Active
