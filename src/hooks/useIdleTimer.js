@@ -1,22 +1,42 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const useIdleTimer = (onIdle, idleTime = 180000) => {
   const idleTimeoutRef = useRef(null);
-  const idleIntervalRef = useRef(null);
+  const countdownIntervalRef = useRef(null);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [isIdle, setIsIdle] = useState(false);
 
   const reset = () => {
     console.log('Resetting idle timer...');
+    setIsIdle(false);
+    setTimeLeft(0);
+
     if (idleTimeoutRef.current) {
       clearTimeout(idleTimeoutRef.current);
     }
-    if (idleIntervalRef.current) {
-      clearInterval(idleIntervalRef.current);
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
     }
 
+    // Start countdown after 30 seconds of inactivity
     idleTimeoutRef.current = setTimeout(() => {
-      console.log('Idle timeout reached, calling onIdle...');
-      onIdle();
-    }, idleTime);
+      console.log('Starting countdown...');
+      setIsIdle(true);
+      setTimeLeft(150); // 2:30 in seconds
+      
+      // Update countdown every second
+      countdownIntervalRef.current = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            console.log('Countdown finished, calling onIdle...');
+            clearInterval(countdownIntervalRef.current);
+            onIdle();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }, 30000); // 30 seconds before showing countdown
   };
 
   useEffect(() => {
@@ -54,13 +74,13 @@ const useIdleTimer = (onIdle, idleTime = 180000) => {
       if (idleTimeoutRef.current) {
         clearTimeout(idleTimeoutRef.current);
       }
-      if (idleIntervalRef.current) {
-        clearInterval(idleIntervalRef.current);
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
       }
     };
-  }, [onIdle, idleTime]);
+  }, [onIdle]);
 
-  return { reset };
+  return { timeLeft, reset };
 };
 
 export default useIdleTimer; 
