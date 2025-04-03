@@ -189,6 +189,7 @@ export const CalculatorProvider = ({ children }) => {
       grandPrix: 0,
       jumper: 0
     });
+    setSelectedTier(null);
   };
 
   const getRecommendedTier = () => {
