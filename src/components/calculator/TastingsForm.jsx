@@ -48,7 +48,7 @@ const TastingsForm = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            How many complimentary tastings would you like per year?
+            How many free tastings do you think you would send to friends and family each year as part of Milea Miles?
           </label>
           <input
             type="number"
