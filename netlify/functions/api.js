@@ -114,10 +114,10 @@ async function createCustomer(customerData) {
       lastName: customerData.lastName,
       emails: [{ email: customerData.email }],
       phones: customerData.phone ? [{
-        phone: `+1${customerData.phone.replace(/\D/g, '')}`,
-        countryCode: 'US'
+        phone: `+1${customerData.phone.replace(/\D/g, '')}`
       }] : [],
-      birthDate: customerData.birthDate
+      birthDate: customerData.birthDate,
+      countryCode: 'US'  // Add country code at the customer level
     };
     console.log('Customer payload:', JSON.stringify(payload, null, 2));
     const response = await axios.post(`${C7_API_URL}/customer`, payload, {
@@ -142,10 +142,10 @@ async function updateCustomer(customerId, customerData) {
       lastName: customerData.lastName,
       emails: [{ email: customerData.email }],
       phones: customerData.phone ? [{
-        phone: `+1${customerData.phone.replace(/\D/g, '')}`,
-        countryCode: 'US'
+        phone: `+1${customerData.phone.replace(/\D/g, '')}`
       }] : [],
-      birthDate: customerData.birthDate
+      birthDate: customerData.birthDate,
+      countryCode: 'US'  // Add country code at the customer level
     };
     console.log('Update payload:', JSON.stringify(payload, null, 2));
     const response = await axios.put(`${C7_API_URL}/customer/${customerId}`, payload, {
