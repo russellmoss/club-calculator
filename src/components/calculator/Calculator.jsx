@@ -9,9 +9,12 @@ import useIdleTimer from '../../hooks/useIdleTimer';
 const Calculator = () => {
   const { currentStep, resetCalculator } = useCalculator();
 
-  useIdleTimer(() => {
+  const handleIdle = () => {
+    console.log('Calculator idle, resetting...');
     resetCalculator();
-  }, 180000); // 3 minutes in milliseconds
+  };
+
+  useIdleTimer(handleIdle, 180000); // 3 minutes in milliseconds
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
