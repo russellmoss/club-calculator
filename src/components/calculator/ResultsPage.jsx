@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useCalculator } from '../../contexts/CalculatorContext';
-import Button from '../common/Button';
 import Modal from '../common/Modal';
 import ClubSignupForm from '../clubSignup/ClubSignupForm';
 

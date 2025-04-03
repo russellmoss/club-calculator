@@ -5,7 +5,9 @@ const TermsAndSubmitStep = ({ formData, updateFormData, onBack, onSubmit, loadin
   const [showTerms, setShowTerms] = useState(false);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
     onSubmit();
   };
 

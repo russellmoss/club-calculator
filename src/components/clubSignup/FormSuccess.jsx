@@ -2,43 +2,25 @@ import React from 'react';
 
 const FormSuccess = ({ onClose }) => {
   return (
-    <div className="text-center py-6">
-      <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-        <svg
-          className="h-6 w-6 text-green-600"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path d="M5 13l4 4L19 7"></path>
-        </svg>
-      </div>
-      
-      <h2 className="text-2xl font-gilda text-primary mb-2">
-        Welcome to the Wine Club!
-      </h2>
-      
-      <p className="text-gray-600 mb-6">
-        Thank you for joining. To finalize your membership sign up process, please see a member of the Milea Estate staff.
-      </p>
-      
-      <div className="space-y-4">
-        <button
-          onClick={onClose}
-          className="w-full bg-primary text-white py-3 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-colors"
-        >
-          Close
-        </button>
-        
-        <p className="text-sm text-gray-500">
-          Have questions? Contact us at{' '}
-          <a href="mailto:club@mileaestatevineyard.com" className="text-primary hover:underline">
-            club@mileaestatevineyard.com
-          </a>
-        </p>
+    <div className="max-w-2xl mx-auto p-4 sm:p-6">
+      <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
+        <div className="flex flex-col items-center text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+            <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Success!</h2>
+          <p className="text-gray-600 mb-6">
+            Your wine club membership has been created successfully. You will receive a confirmation email shortly.
+          </p>
+          <button
+            onClick={onClose}
+            className="w-full sm:w-auto px-6 py-3 text-base font-medium text-white bg-primary border border-transparent rounded-md hover:bg-darkBrownHover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );

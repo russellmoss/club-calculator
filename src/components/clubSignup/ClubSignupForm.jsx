@@ -29,41 +29,41 @@ const ClubSignupForm = ({ clubId, onClose }) => {
     birthDate: '',
     
     // Billing address
-    billingAddress: {
-      address: '',
-      address2: '',
-      city: '',
-      stateCode: '',
-      zipCode: '',
-      countryCode: 'US',
-      isDefault: true
-    },
+    billingAddress: '',
+    billingAddress2: '',
+    billingCity: '',
+    billingState: '',
+    billingZip: '',
+    billingCountry: 'US',
     
     // Shipping address
-    shippingAddress: {
-      address: '',
-      address2: '',
-      city: '',
-      stateCode: '',
-      zipCode: '',
-      countryCode: 'US',
-      isDefault: true
-    },
+    shippingFirstName: '',
+    shippingLastName: '',
+    shippingAddress: '',
+    shippingAddress2: '',
+    shippingCity: '',
+    shippingState: '',
+    shippingZip: '',
+    shippingCountry: 'US',
     
-    // Options
-    useShippingAsBilling: false,
-    orderDeliveryMethod: 'Ship', // 'Ship' or 'Pickup'
-    termsAccepted: false
+    // Delivery method
+    orderDeliveryMethod: 'Pickup',
+    sameAsBilling: true
   });
   
   const { processClubSignup } = useCommerce7Api();
   
   // Update form data
   const updateFormData = (data) => {
-    setFormData(prevState => ({
-      ...prevState,
-      ...data
-    }));
+    console.log('Updating form data:', data);
+    setFormData(prevState => {
+      const newState = {
+        ...prevState,
+        ...data
+      };
+      console.log('New form state:', newState);
+      return newState;
+    });
   };
   
   // Handle next step
@@ -78,30 +78,67 @@ const ClubSignupForm = ({ clubId, onClose }) => {
   };
   
   // Handle form submission
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    if (e) {
+      e.preventDefault();
+    }
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      setError(null);
+      // Create submission data with explicit metadata
+      const submissionData = {
+        customerInfo: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          birthDate: formData.birthDate
+        },
+        billingAddress: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          address: formData.billingAddress,
+          address2: formData.billingAddress2 || '',
+          city: formData.billingCity,
+          stateCode: formData.billingState,
+          zipCode: formData.billingZip,
+          countryCode: formData.billingCountry || 'US'
+        },
+        shippingAddress: formData.sameAsBilling ? null : {
+          firstName: formData.shippingFirstName,
+          lastName: formData.shippingLastName,
+          address: formData.shippingAddress,
+          address2: formData.shippingAddress2 || '',
+          city: formData.shippingCity,
+          stateCode: formData.shippingState,
+          zipCode: formData.shippingZip,
+          countryCode: formData.shippingCountry || 'US'
+        },
+        clubId: formData.clubId,
+        orderDeliveryMethod: formData.orderDeliveryMethod,
+        sameAsBilling: formData.sameAsBilling,
+        metaData: {
+          'club-calculator-sign-up': 'true'
+        }
+      };
+
+      console.log('Submitting with metaData:', JSON.stringify(submissionData.metaData, null, 2));
+      console.log('Full submission data:', JSON.stringify(submissionData, null, 2));
       
-      // If using billing as shipping, copy the data
-      const submissionData = { ...formData };
-      if (formData.useShippingAsBilling) {
-        submissionData.shippingAddress = { ...formData.billingAddress };
+      const response = await processClubSignup(submissionData);
+      
+      if (response.success) {
+        showToast('Club membership created successfully!', 'success');
+        setSuccess(true);
+      } else {
+        setError(response.error || 'Failed to process signup');
+        showToast(response.error || 'Failed to process signup', 'error');
       }
-      
-      // Process the signup
-      await processClubSignup({
-        ...submissionData,
-        clubId
-      });
-      
-      showToast('Club membership created successfully!', 'success');
-      setSuccess(true);
-      
     } catch (err) {
-      const errorMessage = err.message || 'An error occurred during signup.';
-      setError(errorMessage);
-      showToast(errorMessage, 'error');
+      console.error('Error in form submission:', err);
+      setError(err.message || 'An error occurred during signup');
+      showToast(err.message || 'An error occurred during signup', 'error');
     } finally {
       setLoading(false);
     }
@@ -173,7 +210,7 @@ const ClubSignupForm = ({ clubId, onClose }) => {
   }
   
   return (
-    <div className="relative max-w-2xl mx-auto p-6">
+    <div className="relative max-w-2xl mx-auto p-4 sm:p-6">
       {/* Loading Overlay */}
       {loading && (
         <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50 rounded-lg">
@@ -185,7 +222,9 @@ const ClubSignupForm = ({ clubId, onClose }) => {
       )}
       
       <FormStepper steps={steps.map(step => step.label)} activeStep={activeStep} />
-      {steps[activeStep].component}
+      <div className="mt-6">
+        {steps[activeStep].component}
+      </div>
     </div>
   );
 };
