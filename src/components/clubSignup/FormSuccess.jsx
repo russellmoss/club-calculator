@@ -12,7 +12,7 @@ const FormSuccess = ({ onClose }) => {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Success!</h2>
           <p className="text-gray-600 mb-6">
-            Your wine club membership has been created successfully. You will receive a confirmation email shortly.
+            Thank you for joining the Milea Estate wine club. A member of our team will reach out shortly to finalize your signup process.
           </p>
           <button
             onClick={onClose}
