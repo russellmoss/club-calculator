@@ -114,6 +114,7 @@ async function createCustomer(customerData) {
       firstName: customerData.firstName,
       lastName: customerData.lastName,
       emails: [{ email: customerData.email }],
+      phones: customerData.phone ? [{ phone: customerData.phone }] : [],
       birthDate: customerData.birthDate
     };
     
@@ -138,7 +139,8 @@ async function updateCustomer(customerId, customerData) {
     const payload = {
       firstName: customerData.firstName,
       lastName: customerData.lastName,
-      birthDate: customerData.birthDate
+      birthDate: customerData.birthDate,
+      phones: customerData.phone ? [{ phone: customerData.phone }] : []
     };
     
     const response = await axios.put(

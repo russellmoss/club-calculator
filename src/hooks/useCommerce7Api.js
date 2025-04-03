@@ -153,6 +153,7 @@ const useCommerce7Api = () => {
           firstName: formData.customerInfo.firstName,
           lastName: formData.customerInfo.lastName,
           email: formData.customerInfo.email,
+          phone: formData.customerInfo.phone,
           birthDate: formData.customerInfo.birthDate
         },
         billingAddress: {
