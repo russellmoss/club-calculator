@@ -29,14 +29,7 @@
 [functions]
   node_bundler = "esbuild"
 
-[functions.environment]
-  C7_APP_ID = "club-test"
-  C7_SECRET_KEY = "zPfLmVXA3Yg8ht0NWEs1RJxqCuiQob7TKpdlZB65wOeMcHFUnr49kyavGj2StEMn"
-  C7_TENANT_ID = "milea-estate-vineyard"
-  PICKUP_LOCATION_ID = "e75bfc54-009d-43db-8ed7-113158cce63e"
-
 [dev]
   port = 8888
   targetPort = 3000
-  framework = "create-react-app"
-  environment = { C7_APP_ID = "club-test", C7_SECRET_KEY = "zPfLmVXA3Yg8ht0NWEs1RJxqCuiQob7TKpdlZB65wOeMcHFUnr49kyavGj2StEMn", C7_TENANT_ID = "milea-estate-vineyard", PICKUP_LOCATION_ID = "e75bfc54-009d-43db-8ed7-113158cce63e" } 
+  framework = "create-react-app" 
