@@ -6,7 +6,7 @@ const TastingsForm = () => {
   const { formData, updateFormData, currentStep, nextStep, prevStep } = useCalculator();
   const [focusedField, setFocusedField] = useState(null);
 
-  if (currentStep !== 1) return null;
+  if (currentStep !== 2) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
