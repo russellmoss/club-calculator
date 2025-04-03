@@ -109,22 +109,24 @@ async function findCustomerByEmail(email) {
 async function createCustomer(customerData) {
   try {
     console.log('Creating new customer...');
-    
     const payload = {
       firstName: customerData.firstName,
       lastName: customerData.lastName,
       emails: [{ email: customerData.email }],
-      phones: customerData.phone ? [{ phone: customerData.phone }] : [],
+      phones: customerData.phone ? [{
+        phone: `+1${customerData.phone.replace(/\D/g, '')}`,
+        countryCode: 'US'
+      }] : [],
       birthDate: customerData.birthDate
     };
-    
-    const response = await axios.post(
-      'https://api.commerce7.com/v1/customer',
-      payload,
-      authConfig
-    );
-    
-    console.log('Customer created successfully!', `ID: ${response.data.id}`);
+    console.log('Customer payload:', JSON.stringify(payload, null, 2));
+    const response = await axios.post(`${C7_API_URL}/customer`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${basicAuthToken}`,
+        'Tenant': C7_TENANT_ID
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('Error creating customer:', error.response?.data || error.message);
@@ -134,22 +136,25 @@ async function createCustomer(customerData) {
 
 async function updateCustomer(customerId, customerData) {
   try {
-    console.log(`Updating customer with ID: ${customerId}`);
-    
+    console.log('Updating customer...');
     const payload = {
       firstName: customerData.firstName,
       lastName: customerData.lastName,
-      birthDate: customerData.birthDate,
-      phones: customerData.phone ? [{ phone: customerData.phone }] : []
+      emails: [{ email: customerData.email }],
+      phones: customerData.phone ? [{
+        phone: `+1${customerData.phone.replace(/\D/g, '')}`,
+        countryCode: 'US'
+      }] : [],
+      birthDate: customerData.birthDate
     };
-    
-    const response = await axios.put(
-      `https://api.commerce7.com/v1/customer/${customerId}`,
-      payload,
-      authConfig
-    );
-    
-    console.log('Customer updated successfully!');
+    console.log('Update payload:', JSON.stringify(payload, null, 2));
+    const response = await axios.put(`${C7_API_URL}/customer/${customerId}`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${basicAuthToken}`,
+        'Tenant': C7_TENANT_ID
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('Error updating customer:', error.response?.data || error.message);
