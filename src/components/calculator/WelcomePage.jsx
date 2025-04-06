@@ -4,6 +4,12 @@ import { useCalculator } from '../../contexts/CalculatorContext';
 
 const WelcomePage = () => {
   const navigate = useNavigate();
+  const { resetCalculator } = useCalculator();
+
+  const handleStart = () => {
+    resetCalculator();
+    navigate('/calculator');
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-start px-4 pt-8 sm:pt-12">
@@ -21,7 +27,7 @@ const WelcomePage = () => {
           Calculate your savings today
         </p>
         <button
-          onClick={() => navigate('/calculator')}
+          onClick={handleStart}
           className="w-full bg-primary text-white py-3 sm:py-4 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-colors"
         >
           Start

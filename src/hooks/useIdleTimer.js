@@ -5,9 +5,15 @@ const useIdleTimer = (onIdle, idleTime = 180000) => {
   const countdownIntervalRef = useRef(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [isIdle, setIsIdle] = useState(false);
+  const lastActivityRef = useRef(Date.now());
 
   const reset = () => {
-    console.log('Resetting idle timer...', new Date().toISOString());
+    lastActivityRef.current = Date.now();
+    
+    if (isIdle) {
+      console.log('Resetting idle timer from idle state', new Date().toISOString());
+    }
+    
     setIsIdle(false);
     setTimeLeft(0);
 
@@ -49,19 +55,21 @@ const useIdleTimer = (onIdle, idleTime = 180000) => {
       'touchstart',
       'click',
       'input',
-      'change',
-      'focus',
-      'blur'
+      'change'
     ];
 
-    const eventHandler = (event) => {
-      console.log('User activity detected:', event.type, new Date().toISOString());
-      reset();
+    const eventHandler = () => {
+      const now = Date.now();
+      // Throttle resets to avoid excessive function calls
+      if (now - lastActivityRef.current > 1000) {
+        console.log('User activity detected', new Date().toISOString());
+        reset();
+      }
     };
 
-    // Add event listeners with capture phase
+    // Add event listeners
     events.forEach(event => {
-      document.addEventListener(event, eventHandler, { capture: true });
+      window.addEventListener(event, eventHandler);
       console.log(`Added event listener for ${event}`);
     });
 
@@ -71,8 +79,7 @@ const useIdleTimer = (onIdle, idleTime = 180000) => {
     return () => {
       console.log('Cleaning up idle timer...', new Date().toISOString());
       events.forEach(event => {
-        document.removeEventListener(event, eventHandler, { capture: true });
-        console.log(`Removed event listener for ${event}`);
+        window.removeEventListener(event, eventHandler);
       });
       if (idleTimeoutRef.current) {
         clearTimeout(idleTimeoutRef.current);
@@ -83,7 +90,7 @@ const useIdleTimer = (onIdle, idleTime = 180000) => {
     };
   }, [onIdle]);
 
-  return { timeLeft, reset };
+  return { timeLeft, reset, isIdle };
 };
 
 export default useIdleTimer; 

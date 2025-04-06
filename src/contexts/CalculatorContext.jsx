@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { calculateSavings } from '../utils/calculatorUtils';
+import { useNavigate } from 'react-router-dom';
 
 const CalculatorContext = createContext();
 
 export const CalculatorProvider = ({ children }) => {
+  const navigate = useNavigate();
   // State declarations
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
@@ -157,11 +159,29 @@ export const CalculatorProvider = ({ children }) => {
     }));
   };
 
-  const nextStep = () => setCurrentStep(prev => prev + 1);
-  const prevStep = () => setCurrentStep(prev => prev - 1);
+  const nextStep = () => {
+    if (currentStep === 3) {
+      // If we're on the last step, navigate to home
+      navigate('/');
+      resetCalculator();
+    } else {
+      setCurrentStep(prev => prev + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep === 0) {
+      // If we're on the first step, navigate to home
+      navigate('/');
+      resetCalculator();
+    } else {
+      setCurrentStep(prev => prev - 1);
+    }
+  };
+
   const goToStep = (step) => setCurrentStep(step);
 
-  const resetCalculator = () => {
+  const resetCalculator = useCallback(() => {
     setCurrentStep(0);
     setFormData({
       monthlyBottles: 0,
@@ -190,7 +210,7 @@ export const CalculatorProvider = ({ children }) => {
       jumper: 0
     });
     setSelectedTier(null);
-  };
+  }, []);
 
   const getRecommendedTier = () => {
     const { tripleCrown, grandPrix, jumper } = savings;

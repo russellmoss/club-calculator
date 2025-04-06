@@ -4,18 +4,9 @@ import ConsumptionForm from './ConsumptionForm';
 import TastingsForm from './TastingsForm';
 import EventsForm from './EventsForm';
 import FormStepper from './FormStepper';
-import useIdleTimer from '../../hooks/useIdleTimer';
-import IdleTimerDisplay from '../common/IdleTimerDisplay';
 
 const Calculator = () => {
-  const { currentStep, resetCalculator } = useCalculator();
-
-  const handleIdle = () => {
-    console.log('Calculator idle, resetting...');
-    resetCalculator();
-  };
-
-  const { timeLeft, reset } = useIdleTimer(handleIdle, 180000); // 3 minutes in milliseconds
+  const { currentStep } = useCalculator();
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -31,7 +22,6 @@ const Calculator = () => {
         {currentStep === 1 && <TastingsForm />}
         {currentStep === 2 && <EventsForm />}
       </div>
-      <IdleTimerDisplay timeLeft={timeLeft} onReset={reset} />
     </div>
   );
 };
