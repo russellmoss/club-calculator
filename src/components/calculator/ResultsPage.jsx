@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useCalculator } from '../../contexts/CalculatorContext';
 import Modal from '../common/Modal';
 import ClubSignupForm from '../clubSignup/ClubSignupForm';
+import SavingsBreakdownModal from './SavingsBreakdownModal';
 
 const ResultsPage = () => {
-  const { savings, resetCalculator } = useCalculator();
+  const { formData, savings, resetCalculator, prevStep } = useCalculator();
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [selectedClub, setSelectedClub] = useState(null);
   const [animatedSavings, setAnimatedSavings] = useState({
@@ -12,8 +13,13 @@ const ResultsPage = () => {
     grandPrix: 0,
     jumper: 0
   });
+  const [selectedTier, setSelectedTier] = useState(null);
+  const [animationStarted, setAnimationStarted] = useState(false);
 
   useEffect(() => {
+    // Start animation immediately
+    setAnimationStarted(true);
+    
     const duration = 1500; // milliseconds
     const steps = 50;
     const interval = duration / steps;
@@ -43,6 +49,24 @@ const ResultsPage = () => {
     setShowSignupModal(true);
   };
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const handleJoinClick = (tier) => {
+    // Handle join button click
+    console.log(`Joining ${tier} tier`);
+  };
+
+  const handleCheckMathClick = (tier) => {
+    setSelectedTier(tier);
+  };
+
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-gilda text-primary mb-6 text-center">Your Potential Annual Savings</h2>
@@ -53,7 +77,9 @@ const ResultsPage = () => {
           <h3 className="text-xl font-gilda text-primary">Triple Crown</h3>
           <div className="text-right">
             <div className="text-sm text-gray-600">Annual Savings</div>
-            <div className="text-2xl font-bold text-primary">${animatedSavings.tripleCrown}</div>
+            <div className="text-2xl font-bold text-primary">
+              {animationStarted ? `$${animatedSavings.tripleCrown}` : `$${savings.tripleCrown}`}
+            </div>
           </div>
         </div>
         
@@ -70,13 +96,20 @@ const ResultsPage = () => {
             <li className="text-sm">Free quarterly tastings for member + 3 guests</li>
           </ul>
         </div>
-        
-        <button
-          onClick={() => handleJoinClub(process.env.REACT_APP_CLUB_TRIPLE_CROWN_ID)}
-          className="w-full bg-primary text-white py-4 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-all duration-200 hover:shadow-md"
-        >
-          Join Triple Crown
-        </button>
+        <div className="space-y-2">
+          <button
+            onClick={() => handleJoinClub(process.env.REACT_APP_CLUB_TRIPLE_CROWN_ID)}
+            className="w-full bg-primary text-white py-4 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-all duration-200 hover:shadow-md"
+          >
+            Join Triple Crown
+          </button>
+          <button
+            onClick={() => handleCheckMathClick('Triple Crown')}
+            className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-200 transition-all duration-200"
+          >
+            Check our math
+          </button>
+        </div>
       </div>
       
       {/* Grand Prix */}
@@ -85,7 +118,9 @@ const ResultsPage = () => {
           <h3 className="text-xl font-gilda text-darkBrown">Grand Prix</h3>
           <div className="text-right">
             <div className="text-sm text-gray-600">Annual Savings</div>
-            <div className="text-2xl font-bold text-primary">${animatedSavings.grandPrix}</div>
+            <div className="text-2xl font-bold text-primary">
+              {animationStarted ? `$${animatedSavings.grandPrix}` : `$${savings.grandPrix}`}
+            </div>
           </div>
         </div>
         
@@ -99,13 +134,20 @@ const ResultsPage = () => {
             <li className="text-sm">Free quarterly tastings for member + 3 guests</li>
           </ul>
         </div>
-        
-        <button
-          onClick={() => handleJoinClub(process.env.REACT_APP_CLUB_GRAND_PRIX_ID)}
-          className="w-full bg-primary text-white py-4 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-all duration-200 hover:shadow-md"
-        >
-          Join Grand Prix
-        </button>
+        <div className="space-y-2">
+          <button
+            onClick={() => handleJoinClub(process.env.REACT_APP_CLUB_GRAND_PRIX_ID)}
+            className="w-full bg-primary text-white py-4 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-all duration-200 hover:shadow-md"
+          >
+            Join Grand Prix
+          </button>
+          <button
+            onClick={() => handleCheckMathClick('Grand Prix')}
+            className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-200 transition-all duration-200"
+          >
+            Check our math
+          </button>
+        </div>
       </div>
       
       {/* Jumper */}
@@ -114,7 +156,9 @@ const ResultsPage = () => {
           <h3 className="text-xl font-gilda text-darkBrown">Jumper</h3>
           <div className="text-right">
             <div className="text-sm text-gray-600">Annual Savings</div>
-            <div className="text-2xl font-bold text-primary">${animatedSavings.jumper}</div>
+            <div className="text-2xl font-bold text-primary">
+              {animationStarted ? `$${animatedSavings.jumper}` : `$${savings.jumper}`}
+            </div>
           </div>
         </div>
         
@@ -127,13 +171,20 @@ const ResultsPage = () => {
             <li className="text-sm">Access to exclusive club-only events</li>
           </ul>
         </div>
-        
-        <button
-          onClick={() => handleJoinClub(process.env.REACT_APP_CLUB_JUMPER_ID)}
-          className="w-full bg-primary text-white py-4 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-all duration-200 hover:shadow-md"
-        >
-          Join Jumper
-        </button>
+        <div className="space-y-2">
+          <button
+            onClick={() => handleJoinClub(process.env.REACT_APP_CLUB_JUMPER_ID)}
+            className="w-full bg-primary text-white py-4 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-all duration-200 hover:shadow-md"
+          >
+            Join Jumper
+          </button>
+          <button
+            onClick={() => handleCheckMathClick('Jumper')}
+            className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-200 transition-all duration-200"
+          >
+            Check our math
+          </button>
+        </div>
       </div>
       
       <div className="mt-8 text-center">
@@ -149,12 +200,20 @@ const ResultsPage = () => {
       
       <div className="mt-6 text-center">
         <button
-          onClick={resetCalculator}
+          onClick={prevStep}
           className="bg-gray-200 text-gray-800 py-3 px-6 rounded-md text-lg font-medium hover:bg-gray-300 transition-all duration-200 hover:shadow-md"
         >
-          Start Over
+          Back
         </button>
       </div>
+
+      <SavingsBreakdownModal
+        isOpen={selectedTier !== null}
+        onClose={() => setSelectedTier(null)}
+        tier={selectedTier}
+        formData={formData}
+        savings={savings}
+      />
       
       {/* Modal for club signup */}
       {showSignupModal && (

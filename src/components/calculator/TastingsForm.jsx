@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCalculator } from '../../contexts/CalculatorContext';
 import SavingsTally from './SavingsTally';
+import { FaCheck } from 'react-icons/fa';
 
 const TastingsForm = () => {
   const { formData, updateFormData, currentStep, nextStep, prevStep } = useCalculator();
@@ -27,23 +28,38 @@ const TastingsForm = () => {
     }
   };
 
+  const handleQuarterlyTastingsClick = () => {
+    updateFormData({ useQuarterlyTastings: !formData.useQuarterlyTastings });
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-gilda text-primary mb-6">Wine Tastings</h2>
       <p className="text-gray-600 mb-8">Let's calculate your savings from complimentary wine tastings.</p>
       
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="quarterlyTastings"
-            checked={formData.useQuarterlyTastings}
-            onChange={(e) => updateFormData({ useQuarterlyTastings: e.target.checked })}
-            className="h-4 w-4 text-primary border-2 border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all duration-200"
-          />
-          <label htmlFor="quarterlyTastings" className="ml-2 text-gray-700">
-            I will use the free quarterly tastings as a Grand Prix or Triple Crown member
-          </label>
+        <div className="space-y-2">
+          <h3 className="text-lg font-medium text-primary">Click if you want free tastings</h3>
+          
+          {/* Quarterly Tastings Card */}
+          <div 
+            className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-lg ${
+              formData.useQuarterlyTastings 
+                ? 'border-primary bg-primary/5' 
+                : 'border-gray-200 hover:border-primary/50'
+            }`}
+            onClick={handleQuarterlyTastingsClick}
+          >
+            {formData.useQuarterlyTastings && (
+              <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                <FaCheck size={12} />
+              </div>
+            )}
+            <h3 className="font-medium text-gray-900 mb-1">Quarterly Tastings</h3>
+            <p className="text-gray-500 text-sm">
+              I will use the free quarterly tastings as a Grand Prix or Triple Crown member
+            </p>
+          </div>
         </div>
 
         <div>

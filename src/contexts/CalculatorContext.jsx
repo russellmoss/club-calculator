@@ -53,9 +53,9 @@ export const CalculatorProvider = ({ children }) => {
     }
     
     if (formData.selectedEvents.pickupParties) {
-      tripleCrownTotal += 280;
-      grandPrixTotal += 280;
-      jumperTotal += 280;
+      tripleCrownTotal += 560; // Double value for Triple Crown
+      grandPrixTotal += 280;   // Keep original value for Grand Prix
+      jumperTotal += 280;      // Keep original value for Jumper
     }
     
     if (formData.selectedEvents.roseDay) {
