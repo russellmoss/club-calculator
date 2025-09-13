@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { useCalculator } from '../../contexts/CalculatorContext';
 import ConsumptionForm from './ConsumptionForm';
 import EventsForm from './EventsForm';
@@ -6,7 +7,12 @@ import TastingsForm from './TastingsForm';
 import ResultsPage from './ResultsPage';
 
 const CalculatorFlow = () => {
-  const { currentStep } = useCalculator();
+  const { currentStep, resetCalculator } = useCalculator();
+
+  // Reset calculator when component mounts
+  useEffect(() => {
+    resetCalculator();
+  }, [resetCalculator]);
 
   const renderStep = () => {
     switch (currentStep) {
@@ -25,8 +31,19 @@ const CalculatorFlow = () => {
 
   return (
     <div className="min-h-screen bg-background py-8 px-4">
-      <div className="max-w-md mx-auto">
-        {renderStep()}
+      <div className="max-w-md mx-auto w-full">
+        <TransitionGroup>
+          <CSSTransition
+            key={currentStep}
+            timeout={300}
+            classNames="fade"
+            unmountOnExit
+          >
+            <div className="w-full">
+              {renderStep()}
+            </div>
+          </CSSTransition>
+        </TransitionGroup>
       </div>
     </div>
   );

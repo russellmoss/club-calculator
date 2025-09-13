@@ -7,8 +7,29 @@
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 200 
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type, Authorization, Accept"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self' https://*.commerce7.com https://*.commerce7cdn.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.commerce7.com https://*.commerce7cdn.com; style-src 'self' 'unsafe-inline' https://*.commerce7cdn.com https://fonts.googleapis.com; img-src 'self' data: https://*.commerce7cdn.com https://i.imgur.com; font-src 'self' https://*.commerce7cdn.com https://fonts.gstatic.com; connect-src 'self' https://*.commerce7.com https://*.commerce7cdn.com https://club-calculator.netlify.app; frame-ancestors 'none';"
+
+[functions]
+  node_bundler = "esbuild"
+
+[dev]
+  port = 8888
+  targetPort = 3000
+  framework = "create-react-app" 

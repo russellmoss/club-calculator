@@ -1,6 +1,7 @@
 import React from 'react';
 import { useCalculator } from '../../contexts/CalculatorContext';
 import SavingsTally from './SavingsTally';
+import { FaCheck } from 'react-icons/fa';
 
 const EventsForm = () => {
   const { formData, updateEventSelection, currentStep, nextStep, prevStep } = useCalculator();
@@ -12,127 +13,131 @@ const EventsForm = () => {
     nextStep();
   };
 
+  const handleEventClick = (eventName) => {
+    updateEventSelection(eventName, !formData.selectedEvents[eventName]);
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-gilda text-primary mb-6">Events & Activities</h2>
       <p className="text-gray-600 mb-8">Select the events you're interested in attending.</p>
       
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-4">
-          <div className="flex items-start">
-            <div className="flex items-center h-5">
-              <input
-                type="checkbox"
-                id="culinarySeries"
-                checked={formData.selectedEvents.culinarySeries}
-                onChange={(e) => updateEventSelection('culinarySeries', e.target.checked)}
-                className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-              />
-            </div>
-            <div className="ml-3">
-              <label htmlFor="culinarySeries" className="font-medium text-gray-700">
-                Culinary Series
-              </label>
-              <p className="text-gray-500 text-sm">
-                Spectacular special dinners with our Executive Chefs and guests
-              </p>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Culinary Series Card */}
+          <div 
+            className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-lg ${
+              formData.selectedEvents.culinarySeries 
+                ? 'border-primary bg-primary/5' 
+                : 'border-gray-200 hover:border-primary/50'
+            }`}
+            onClick={() => handleEventClick('culinarySeries')}
+          >
+            {formData.selectedEvents.culinarySeries && (
+              <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                <FaCheck size={12} />
+              </div>
+            )}
+            <h3 className="font-medium text-gray-900 mb-1">Culinary Series</h3>
+            <p className="text-gray-500 text-sm">
+              Spectacular special dinners with our Executive Chefs and guests
+            </p>
           </div>
 
-          <div className="flex items-start">
-            <div className="flex items-center h-5">
-              <input
-                type="checkbox"
-                id="pickupParties"
-                checked={formData.selectedEvents.pickupParties}
-                onChange={(e) => updateEventSelection('pickupParties', e.target.checked)}
-                className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-              />
-            </div>
-            <div className="ml-3">
-              <label htmlFor="pickupParties" className="font-medium text-gray-700">
-                Pickup Parties
-              </label>
-              <p className="text-gray-500 text-sm">
-                Music, Special menus, Special tastings and community
-              </p>
-            </div>
+          {/* Pickup Parties Card */}
+          <div 
+            className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-lg ${
+              formData.selectedEvents.pickupParties 
+                ? 'border-primary bg-primary/5' 
+                : 'border-gray-200 hover:border-primary/50'
+            }`}
+            onClick={() => handleEventClick('pickupParties')}
+          >
+            {formData.selectedEvents.pickupParties && (
+              <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                <FaCheck size={12} />
+              </div>
+            )}
+            <h3 className="font-medium text-gray-900 mb-1">Pickup Parties</h3>
+            <p className="text-gray-500 text-sm">
+              Quarterly celebrations with food, wine, and live music
+            </p>
           </div>
 
-          <div className="flex items-start">
-            <div className="flex items-center h-5">
-              <input
-                type="checkbox"
-                id="roseDay"
-                checked={formData.selectedEvents.roseDay}
-                onChange={(e) => updateEventSelection('roseDay', e.target.checked)}
-                className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-              />
-            </div>
-            <div className="ml-3">
-              <label htmlFor="roseDay" className="font-medium text-gray-700">
-                Rosé Day
-              </label>
-              <p className="text-gray-500 text-sm">
-                Celebrate the annual release of our Rosé
-              </p>
-            </div>
+          {/* Rosé Day Card */}
+          <div 
+            className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-lg ${
+              formData.selectedEvents.roseDay 
+                ? 'border-primary bg-primary/5' 
+                : 'border-gray-200 hover:border-primary/50'
+            }`}
+            onClick={() => handleEventClick('roseDay')}
+          >
+            {formData.selectedEvents.roseDay && (
+              <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                <FaCheck size={12} />
+              </div>
+            )}
+            <h3 className="font-medium text-gray-900 mb-1">Rosé Day</h3>
+            <p className="text-gray-500 text-sm">
+              A celebration of all things rosé
+            </p>
           </div>
 
-          <div className="flex items-start">
-            <div className="flex items-center h-5">
-              <input
-                type="checkbox"
-                id="fizzFest"
-                checked={formData.selectedEvents.fizzFest}
-                onChange={(e) => updateEventSelection('fizzFest', e.target.checked)}
-                className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-              />
-            </div>
-            <div className="ml-3">
-              <label htmlFor="fizzFest" className="font-medium text-gray-700">
-                Fizz Fest
-              </label>
-              <p className="text-gray-500 text-sm">
-                An annual celebration of all things bubbles
-              </p>
-            </div>
+          {/* Fizz Fest Card */}
+          <div 
+            className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-lg ${
+              formData.selectedEvents.fizzFest 
+                ? 'border-primary bg-primary/5' 
+                : 'border-gray-200 hover:border-primary/50'
+            }`}
+            onClick={() => handleEventClick('fizzFest')}
+          >
+            {formData.selectedEvents.fizzFest && (
+              <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                <FaCheck size={12} />
+              </div>
+            )}
+            <h3 className="font-medium text-gray-900 mb-1">Fizz Fest</h3>
+            <p className="text-gray-500 text-sm">
+              An annual celebration of all things bubbles
+            </p>
           </div>
 
-          <div className="flex items-start">
-            <div className="flex items-center h-5">
-              <input
-                type="checkbox"
-                id="thanksgiving"
-                checked={formData.selectedEvents.thanksgiving}
-                onChange={(e) => updateEventSelection('thanksgiving', e.target.checked)}
-                className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-              />
-            </div>
-            <div className="ml-3">
-              <label htmlFor="thanksgiving" className="font-medium text-gray-700">
-                Thanksgiving Uncorked
-              </label>
-              <p className="text-gray-500 text-sm">
-                Come celebrate and get your holiday wine
-              </p>
-            </div>
+          {/* Thanksgiving Card */}
+          <div 
+            className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-lg ${
+              formData.selectedEvents.thanksgiving 
+                ? 'border-primary bg-primary/5' 
+                : 'border-gray-200 hover:border-primary/50'
+            }`}
+            onClick={() => handleEventClick('thanksgiving')}
+          >
+            {formData.selectedEvents.thanksgiving && (
+              <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                <FaCheck size={12} />
+              </div>
+            )}
+            <h3 className="font-medium text-gray-900 mb-1">Thanksgiving Uncorked</h3>
+            <p className="text-gray-500 text-sm">
+              Come celebrate and get your holiday wine
+            </p>
           </div>
         </div>
 
         <SavingsTally />
 
-        <div className="flex justify-between">
+        <div className="flex justify-between mt-8">
           <button
             type="button"
             onClick={prevStep}
-            className="bg-gray-200 text-gray-800 py-3 px-6 rounded-md text-lg font-medium hover:bg-gray-300 transition-colors"
+            className="bg-gray-200 text-gray-800 py-3 px-6 rounded-md text-lg font-medium hover:bg-gray-300 transition-all duration-200 hover:shadow-md"
           >
             Back
           </button>
           <button
             type="submit"
-            className="bg-primary text-white py-3 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-colors"
+            className="bg-primary text-white py-3 px-6 rounded-md text-lg font-medium hover:bg-darkBrownHover transition-all duration-200 hover:shadow-md"
           >
             Next: Wine Tastings
           </button>

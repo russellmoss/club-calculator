@@ -1,11 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { calculateSavings } from '../utils/calculatorUtils';
-import { useNavigate } from 'react-router-dom';
 
 const CalculatorContext = createContext();
 
 export const CalculatorProvider = ({ children }) => {
-  const navigate = useNavigate();
   // State declarations
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
@@ -40,49 +38,46 @@ export const CalculatorProvider = ({ children }) => {
   const [selectedTier, setSelectedTier] = useState(null);
 
   const calculateSavingsForAllTiers = useCallback(() => {
-    // Base savings for each tier
-    let tripleCrownTotal = 260; // Base savings for Triple Crown
-    let grandPrixTotal = 150;   // Base savings for Grand Prix
-    let jumperTotal = 76;       // Base savings for Jumper
+    // Base savings - wine discounts
+    let tripleCrownTotal = 260; // Base wine savings 
+    let grandPrixTotal = 150;  // Base wine savings
+    let jumperTotal = 76;     // Base wine savings
+    
+    // Food discounts (Triple Crown only)
+    tripleCrownTotal += 30;
     
     // Calculate event savings
     if (formData.selectedEvents.culinarySeries) {
-      tripleCrownTotal += 100;
-      grandPrixTotal += 100;
-      jumperTotal += 100;
+      tripleCrownTotal += 35;
+      grandPrixTotal += 35;
+      jumperTotal += 35;
     }
     
     if (formData.selectedEvents.pickupParties) {
-      tripleCrownTotal += 560; // Double value for Triple Crown
-      grandPrixTotal += 280;   // Keep original value for Grand Prix
-      jumperTotal += 280;      // Keep original value for Jumper
+      tripleCrownTotal += 35;
+      grandPrixTotal += 35;
+      jumperTotal += 35;
     }
     
     if (formData.selectedEvents.roseDay) {
-      tripleCrownTotal += 70;
-      grandPrixTotal += 70;
-      jumperTotal += 70;
+      tripleCrownTotal += 35;
+      grandPrixTotal += 35;
+      jumperTotal += 35;
     }
     
     if (formData.selectedEvents.fizzFest) {
-      tripleCrownTotal += 70;
-      grandPrixTotal += 70;
-      jumperTotal += 70;
+      tripleCrownTotal += 35;
+      grandPrixTotal += 35;
+      jumperTotal += 35;
     }
     
     if (formData.selectedEvents.thanksgiving) {
-      tripleCrownTotal += 70;
-      grandPrixTotal += 70;
-      jumperTotal += 70;
+      tripleCrownTotal += 35;
+      grandPrixTotal += 35;
+      jumperTotal += 35;
     }
     
-    // Add quarterly tastings savings for Grand Prix and Triple Crown
-    if (formData.useQuarterlyTastings) {
-      tripleCrownTotal += 400;
-      grandPrixTotal += 400;
-    }
-    
-    // Add complimentary tastings savings
+    // Calculate complimentary tastings savings
     const complimentarySavings = formData.complimentaryTastings * 25;
     tripleCrownTotal += complimentarySavings;
     grandPrixTotal += complimentarySavings;
@@ -159,29 +154,11 @@ export const CalculatorProvider = ({ children }) => {
     }));
   };
 
-  const nextStep = () => {
-    if (currentStep === 3) {
-      // If we're on the last step, navigate to home
-      navigate('/');
-      resetCalculator();
-    } else {
-      setCurrentStep(prev => prev + 1);
-    }
-  };
-
-  const prevStep = () => {
-    if (currentStep === 0) {
-      // If we're on the first step, navigate to home
-      navigate('/');
-      resetCalculator();
-    } else {
-      setCurrentStep(prev => prev - 1);
-    }
-  };
-
+  const nextStep = () => setCurrentStep(prev => prev + 1);
+  const prevStep = () => setCurrentStep(prev => prev - 1);
   const goToStep = (step) => setCurrentStep(step);
 
-  const resetCalculator = useCallback(() => {
+  const resetCalculator = () => {
     setCurrentStep(0);
     setFormData({
       monthlyBottles: 0,
@@ -209,8 +186,7 @@ export const CalculatorProvider = ({ children }) => {
       grandPrix: 0,
       jumper: 0
     });
-    setSelectedTier(null);
-  }, []);
+  };
 
   const getRecommendedTier = () => {
     const { tripleCrown, grandPrix, jumper } = savings;

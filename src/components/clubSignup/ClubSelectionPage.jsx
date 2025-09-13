@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../common/Modal';
 import ClubSignupForm from './ClubSignupForm';
+import { useCalculator } from '../../contexts/CalculatorContext';
 
 const ClubSelectionPage = () => {
+  const { selectedTier, setSelectedTier } = useCalculator();
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [selectedClub, setSelectedClub] = useState(null);
-  const navigate = useNavigate();
   
   useEffect(() => {
     console.log('Club IDs:', {

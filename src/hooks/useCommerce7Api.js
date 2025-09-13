@@ -3,8 +3,8 @@ import axios from 'axios';
 
 // Use local development server in development, Netlify Functions in production
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '/.netlify/functions/api'
-  : 'http://localhost:5000';
+  ? '/api'  // This will use Netlify's redirect rules
+  : 'http://localhost:8888/.netlify/functions/api';
 
 const useCommerce7Api = () => {
   const [loading, setLoading] = useState(false);
@@ -107,7 +107,7 @@ const useCommerce7Api = () => {
       console.log('Testing with data:', JSON.stringify(transformedData, null, 2));
       
       // Call our backend endpoint
-      const response = await axios.post(`${API_BASE_URL}/api/club-signup`, transformedData);
+      const response = await axios.post(`${API_BASE_URL}/club-signup`, transformedData);
       
       console.log('Test successful:', response.data);
       return response.data;
@@ -142,71 +142,92 @@ const useCommerce7Api = () => {
    */
   const processClubSignup = async (formData) => {
     try {
+      console.log('Starting club signup process...');
+      console.log('Form data received:', JSON.stringify(formData, null, 2));
+      
       setLoading(true);
       
-      // Validate required customer info
-      const requiredCustomerFields = ['firstName', 'lastName', 'email'];
-      const missingCustomerFields = requiredCustomerFields.filter(field => !formData[field]?.trim());
-      
-      if (missingCustomerFields.length > 0) {
-        throw new Error(`Missing required customer fields: ${missingCustomerFields.join(', ')}`);
-      }
-
-      // Transform the data to match Commerce7's expected format
+      // Transform data
       const transformedData = {
         customerInfo: {
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
-          email: formData.email.trim(),
-          phone: formData.phone?.trim() || '',
-          birthDate: formData.birthDate?.trim() || null
+          firstName: formData.customerInfo.firstName,
+          lastName: formData.customerInfo.lastName,
+          email: formData.customerInfo.email,
+          phone: formData.customerInfo.phone,
+          birthDate: formData.customerInfo.birthDate
         },
-        billingAddress: transformAddressData(formData.billingAddress, {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phone: formData.phone
-        }),
-        shippingAddress: formData.orderDeliveryMethod === 'Ship' ? 
-          transformAddressData(formData.shippingAddress, {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            phone: formData.phone
-          }) : null,
+        billingAddress: {
+          firstName: formData.billingAddress.firstName,
+          lastName: formData.billingAddress.lastName,
+          address: formData.billingAddress.address,
+          address2: formData.billingAddress.address2 || '',
+          city: formData.billingAddress.city,
+          stateCode: formData.billingAddress.stateCode,
+          zipCode: formData.billingAddress.zipCode,
+          countryCode: formData.billingAddress.countryCode || 'US'
+        },
+        shippingAddress: formData.sameAsBilling ? null : formData.shippingAddress ? {
+          firstName: formData.shippingAddress.firstName,
+          lastName: formData.shippingAddress.lastName,
+          address: formData.shippingAddress.address,
+          address2: formData.shippingAddress.address2 || '',
+          city: formData.shippingAddress.city,
+          stateCode: formData.shippingAddress.stateCode,
+          zipCode: formData.shippingAddress.zipCode,
+          countryCode: formData.shippingAddress.countryCode || 'US'
+        } : null,
         clubId: formData.clubId,
         orderDeliveryMethod: formData.orderDeliveryMethod,
-        metadata: {
+        sameAsBilling: formData.sameAsBilling,
+        metaData: formData.metaData || {
           'club-calculator-sign-up': 'true'
         }
       };
+
+      console.log('Transformed data:', JSON.stringify(transformedData, null, 2));
+      console.log('Making API request to:', `${API_BASE_URL}/club-signup`);
       
-      // Log the transformed data for debugging
-      console.log('Sending data to Commerce7:', JSON.stringify(transformedData, null, 2));
-      
-      // Call our backend endpoint that handles Commerce7 API calls
-      const response = await axios.post(`${API_BASE_URL}/api/club-signup`, transformedData);
-      
-      return response.data;
-    } catch (error) {
-      // Log detailed error information
-      console.error('Club signup error details:', {
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        errors: error.response?.data?.errors,
-        requestData: error.config?.data
+      const response = await fetch(`${API_BASE_URL}/club-signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(transformedData),
       });
 
-      // Format the error message based on the type of error
-      let errorMessage;
-      if (error.response?.status === 422) {
-        errorMessage = formatCommerce7Errors(error);
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else {
-        errorMessage = error.message || 'Failed to process club signup';
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+      const responseText = await response.text();
+      console.log('Raw response text:', responseText);
+
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('Error parsing response JSON:', parseError);
+        throw new Error('Invalid JSON response from server');
       }
 
-      throw new Error(errorMessage);
+      if (!response.ok) {
+        console.error('API request failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          data: responseData
+        });
+        throw new Error(responseData.error || 'Failed to process club signup');
+      }
+
+      console.log('API request successful:', responseData);
+      return responseData;
+    } catch (error) {
+      console.error('Error in processClubSignup:', {
+        error: error.message,
+        stack: error.stack,
+        data: formData
+      });
+      throw error;
     } finally {
       setLoading(false);
     }
